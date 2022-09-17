@@ -1,0 +1,103 @@
+unit Model.Conexao.Configuracao;
+
+interface
+
+uses
+  System.IniFiles,
+  System.SysUtils,
+  FMX.Forms,
+
+  Model.Conexao.Configuracao.Interfaces;
+
+type
+  TConexaoConfiguracaoMySQL = class(TInterfacedObject, iConexaoConfiguracaoMySQL)
+    private
+      FArquivoIni : TIniFile;
+      FDiretorio  : String;
+    public
+      constructor Create;
+      destructor Destroy; override;
+      class function New : iConexaoConfiguracaoMySQL;
+
+      function ServerHost     : String;
+      function Port           : Integer;
+      function Database       : String;
+      function Password       : String;
+      function UserName       : String;
+      function DriverName     : String;
+      function LibraryName    : String;
+      function VendorLib      : String;
+      function ConnectionName : String;
+      function GetDriveFunc   : String;
+  end;
+
+implementation
+
+{ TConexaoConfiguracaoMySQL }
+constructor TConexaoConfiguracaoMySQL.Create;
+begin
+  FDiretorio := ExtractFilePath(Application.ExeName);
+  FArquivoIni := TIniFile.Create;
+end;
+
+destructor TConexaoConfiguracaoMySQL.Destroy;
+begin
+  inherited;
+end;
+
+class function TConexaoConfiguracaoMySQL.New: iConexaoConfiguracaoMySQL;
+begin
+
+end;
+
+function TConexaoConfiguracaoMySQL.ServerHost: String;
+begin
+
+end;
+
+function TConexaoConfiguracaoMySQL.Port: Integer;
+begin
+
+end;
+
+function TConexaoConfiguracaoMySQL.Database: String;
+begin
+
+end;
+
+function TConexaoConfiguracaoMySQL.Password: String;
+begin
+
+end;
+
+function TConexaoConfiguracaoMySQL.UserName: String;
+begin
+
+end;
+
+function TConexaoConfiguracaoMySQL.DriverName: String;
+begin
+
+end;
+
+function TConexaoConfiguracaoMySQL.LibraryName: String;
+begin
+
+end;
+
+function TConexaoConfiguracaoMySQL.VendorLib: String;
+begin
+
+end;
+
+function TConexaoConfiguracaoMySQL.ConnectionName: String;
+begin
+
+end;
+
+function TConexaoConfiguracaoMySQL.GetDriveFunc: String;
+begin
+
+end;
+
+end.

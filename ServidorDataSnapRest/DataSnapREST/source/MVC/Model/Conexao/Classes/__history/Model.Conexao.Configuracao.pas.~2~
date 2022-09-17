@@ -1,0 +1,12 @@
+unit Model.Conexao.Configuracao;
+
+interface
+
+type
+  TConexaoConfiguracaoMySQL =class(TInterfacedObject, iConexaoConfiguracao)
+
+  end;
+
+implementation
+
+end.

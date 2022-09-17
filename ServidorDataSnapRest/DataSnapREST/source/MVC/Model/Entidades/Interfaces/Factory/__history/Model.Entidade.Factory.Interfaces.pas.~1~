@@ -1,0 +1,7 @@
+unit Model.Entidade.Factory.Interfaces;
+
+interface
+
+implementation
+
+end.

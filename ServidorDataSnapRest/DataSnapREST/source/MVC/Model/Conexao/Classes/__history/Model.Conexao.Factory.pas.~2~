@@ -1,0 +1,26 @@
+unit Model.Conexao.Factory;
+
+interface
+
+uses
+  Model.Conexao.Factory.Interfaces,
+  Model.Conexao.Interfaces,
+  Model.Conexao.Configuracao.Interfaces;
+
+type
+  TConexaoFactory = class(TInterfacedObject, iConexaoFactory)
+    private
+
+    public
+      constructor Create;
+      destructor Destroy; override;
+      class function New : iConexaoFactory;
+
+      function ConexaoFiredacMySQL      : iConexaoMySQL;
+      function ConexaoConfiguracaoMySQL : iConexaoConfiguracaoMySQL;
+
+  end;
+
+implementation
+
+end.

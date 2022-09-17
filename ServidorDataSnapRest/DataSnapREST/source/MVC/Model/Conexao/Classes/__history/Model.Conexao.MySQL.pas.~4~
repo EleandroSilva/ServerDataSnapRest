@@ -1,0 +1,33 @@
+unit Model.Conexao.MySQL;
+
+interface
+
+uses
+  Data.DB,
+  System.JSON,
+
+  Model.Conexao.MySQL.Interfaces;
+
+type
+  TConexaoMySQL = class(TInterfacedObject, iConexaoMySQL)
+    private
+    public
+      constructor Create;
+      destructor Drestoy; override;
+      class function New : iConexaoMySQL;
+
+      function Params(Param: String; Value: Variant): iConexaoMySQL; overload;
+      function Params(Param: String)                : Variant;       overload;
+      function DataSet(DataSource: TDataSource)     : iConexaoMySQL; overload;
+      function DataSet                              : iConexaoMySQL; overload;
+      function ExecSQL                              : iConexaoMySQL;
+      function Open                                 : iConexaoMySQL;
+      function Close                                : iConexaoMySQL;
+      function SQL(Value: String)                   : iConexaoMySQL;
+      function AsJsonArray(Value : TJsonArray)      : iConexaoMySQL; overload;
+      function AsJsonArray                          : TJsonArray;    overload;
+  end;
+
+implementation
+
+end.

@@ -1,0 +1,21 @@
+unit Controller.Entidade;
+
+interface
+
+uses
+  Controller.Interfaces,
+  Model.Entidade.Factory.Interfaces;
+type
+  TControllerEntidade = class(TInterfacedObject, iControllerEntidade)
+    private
+
+    public
+      constructor Create;
+      destructor Destroy; override;
+      class function New : iEntidadeFactory;
+
+  end
+
+implementation
+
+end.

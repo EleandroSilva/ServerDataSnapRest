@@ -1,0 +1,21 @@
+unit Model.Conexao.MySQL;
+
+interface
+
+uses
+  Model.Conexao.MySQL.Interfaces;
+
+type
+  TConexaoMySQL = class(TInterfacedObject, iConexaoMySQL)
+    private
+    public
+      constructor Create;
+      destructor Drestoy; override;
+      class function New : iConexaoMySQL;
+
+
+  end;
+
+implementation
+
+end.

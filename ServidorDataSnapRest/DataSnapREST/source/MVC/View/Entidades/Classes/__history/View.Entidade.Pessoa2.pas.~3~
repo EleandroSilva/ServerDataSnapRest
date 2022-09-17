@@ -1,0 +1,47 @@
+unit View.Entidade.Pessoa2;
+
+interface
+
+uses
+  System.Classes,
+  System.JSON,
+
+  Controller.Entidade.Interfaces,
+  Controller.Entidade;
+{$METHODINFO ON}
+
+type
+  TPessoa2 = class(TDataModule)
+    private
+      FController : iControllerEntidade;
+    public
+      constructor Create;
+      destructor Destroy; override;
+      function Pessoa(const Key: String): TJsonArray;
+  end;
+
+{$METHODINFO OFF}
+
+implementation
+
+{ TPessoa }
+
+constructor TPessoa2.Create;
+begin
+  FController := TControllerEntidade.New;
+end;
+
+destructor TPessoa2.Destroy;
+begin
+  inherited;
+end;
+
+function TPessoa2.Pessoa(const Key: String): TJsonArray;
+begin
+  FController
+           .EntidadeFactory
+           .Pessoa
+           .Get(Key);
+end;
+
+end.

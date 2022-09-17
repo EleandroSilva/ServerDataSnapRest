@@ -1,0 +1,16 @@
+unit Model.Conexao.Configuracao;
+
+interface
+
+type
+  iConexaoConfiguracao = interface
+    ['{A8260FFF-3618-4AE7-87C9-AEA38299E023}']
+  end;
+
+  iConexaoCinfiguracaoMySQL = interface
+    ['{5E1F0838-36F2-4D40-833D-D2BA0DD7D85D}']
+  end;
+
+implementation
+
+end.

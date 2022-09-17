@@ -1,0 +1,45 @@
+unit Model.Entidade.Pessoa;
+
+interface
+
+uses
+  Model.Entidade.Pessoa.Interfaces,
+  System.JSON;
+
+type
+  TPessoa = class(TInterfacedObject, iEntidadePessoa)
+    private
+
+    public
+      constructor Create;
+      destructor Destroy; override;
+      class function New : iEntidadePessoa;
+
+      function Get(const Key: String): TJsonArray;
+  end;
+
+implementation
+
+{ TPessoa }
+
+constructor TPessoa.Create;
+begin
+  //
+end;
+
+destructor TPessoa.Destroy;
+begin
+  inherited;
+end;
+
+class function TPessoa.New: iEntidadePessoa;
+begin
+  Result := Self;
+end;
+
+function TPessoa.Get(const Key: String): TJsonArray;
+begin
+
+end;
+
+end.

@@ -1,0 +1,13 @@
+unit Model.Conexao.MySQL;
+
+interface
+
+uses
+  Model.Conexao.MySQL.Interfaces;
+
+type
+  TConexaoMySQL = class(TInterfacedObject, iConexaoMySQL)
+
+implementation
+
+end.

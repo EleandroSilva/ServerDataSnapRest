@@ -1,0 +1,53 @@
+unit View.Entidade.Pessoa1;
+
+interface
+
+uses
+  System.SysUtils,
+  System.Classes,
+  System.JSON,
+
+  Controller.Entidade.Interfaces;
+
+{$METHODINFO ON}
+type
+  TPessoa = class(TDataModule)
+    procedure DataModuleCreate(Sender: TObject);
+  private
+    FController : iControllerEntidade;
+    { Private declarations }
+  public
+    { Public declarations }
+    function Pessoa(const Key: String): TJsonArray;
+  end;
+
+{$METHODINFO OFF}
+
+var
+  Pessoa: TPessoa;
+
+
+
+implementation
+
+uses
+  Controller.Entidade;
+
+{%CLASSGROUP 'FMX.Controls.TControl'}
+
+{$R *.dfm}
+
+procedure TPessoa.DataModuleCreate(Sender: TObject);
+begin
+  FController := TControllerEntidade.New;
+end;
+
+function TPessoa.Pessoa(const Key: String): TJsonArray;
+begin
+  FController
+           .EntidadeFactory
+           .Pessoa
+           .Get(Key);
+end;
+
+end.

@@ -1,0 +1,6 @@
+object Pessoa1: TPessoa1
+  OldCreateOrder = False
+  OnCreate = DataModuleCreate
+  Height = 199
+  Width = 264
+end

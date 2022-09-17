@@ -1,0 +1,7 @@
+unit Model.Conexao.MySQL;
+
+interface
+
+implementation
+
+end.
