@@ -27,6 +27,7 @@ object WebModule1: TWebModule1
   end
   object DSRESTWebDispatcher1: TDSRESTWebDispatcher
     Server = DSServer1
+    OnFormatResult = DSRESTWebDispatcher1FormatResult
     WebDispatch.PathInfo = 'datasnap*'
     Left = 96
     Top = 75

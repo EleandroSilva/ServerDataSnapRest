@@ -20,6 +20,7 @@ type
   public
     { Public declarations }
     function Pessoa(const Key: String): TJsonArray;
+    procedure acceptPessoa(const Key : String; jObject : TJsonObject);
   end;
 
 {$METHODINFO OFF}
@@ -42,10 +43,18 @@ end;
 
 function TPessoa.Pessoa(const Key: String): TJsonArray;
 begin
+  Result := FController
+                   .EntidadeFactory
+                   .Pessoa
+                 .Get(Key);
+end;
+
+procedure TPessoa.acceptPessoa(const Key: String; jObject: TJsonObject);
+begin
   FController
            .EntidadeFactory
            .Pessoa
-           .Get(Key);
+           .Put(Key , jObject);
 end;
 
 end.

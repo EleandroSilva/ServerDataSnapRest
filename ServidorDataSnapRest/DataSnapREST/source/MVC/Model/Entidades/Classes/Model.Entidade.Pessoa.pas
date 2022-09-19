@@ -3,8 +3,12 @@ unit Model.Entidade.Pessoa;
 interface
 
 uses
-  Model.Entidade.Pessoa.Interfaces,
   System.JSON,
+
+  DataSetConverter4D.Helper,
+  DataSetConverter4D.Impl,
+
+  Model.Entidade.Pessoa.Interfaces,
   Controller.Conexao.Factory.Interfaces;
 
 type
@@ -17,6 +21,7 @@ type
       class function New : iEntidadePessoa;
 
       function Get(const Key: String): TJsonArray;
+      function Put(const Key : String; jObject : TJsonObject) : iEntidadePessoa;
   end;
 
 implementation
@@ -41,31 +46,44 @@ begin
   Result := Self.Create;
 end;
 
+function TEntidadePessoa.Put(const Key: String; jObject: TJsonObject): iEntidadePessoa;
+begin
+  Result := Self;
+  FQuery
+      .ConexaoFactory
+      .ConexaoFiredac
+      .SQL('SELECT * FROM PESSOA WHERE 1=2')
+      .Open;
+
+  FQuery
+      .ConexaoFactory
+      .ConexaoFiredac
+      .FromJSONObject(jObject)
+      .ExecSQL;
+end;
+
 function TEntidadePessoa.Get(const Key: String): TJsonArray;
 begin
   FQuery
       .ConexaoFactory
-      .ConexaoFiredacMySQL
-      .Close;
-
-  FQuery
-      .ConexaoFactory
-      .ConexaoFiredacMySQL
+      .ConexaoFiredac
       .SQL('SELECT * FROM PESSOA ');
+
 
   if Key<>'' then
    FQuery
        .ConexaoFactory
-       .ConexaoFiredacMySQL
+       .ConexaoFiredac
        .SQL(' WHERE IDPESSOA= '+ Key);
 
    FQuery
        .ConexaoFactory
-       .ConexaoFiredacMySQL
+       .ConexaoFiredac
        .Open;
+
    Result := FQuery
                  .ConexaoFactory
-                 .ConexaoFiredacMySQL
+                 .ConexaoFiredac
                  .AsJsonArray;
 end;
 

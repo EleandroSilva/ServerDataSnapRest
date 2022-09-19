@@ -44,7 +44,8 @@ function TEntidadeFactory.Pessoa: iEntidadePessoa;
 begin
   if not Assigned(FPessoa) then
     FPessoa := TEntidadePessoa.New;
-    Result := FPessoa;
+
+  Result := FPessoa;
 end;
 
 end.

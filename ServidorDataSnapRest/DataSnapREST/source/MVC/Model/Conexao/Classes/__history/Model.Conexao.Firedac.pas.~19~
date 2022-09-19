@@ -1,0 +1,175 @@
+unit Model.Conexao.Firedac;
+
+interface
+
+uses
+  Data.DB,
+  System.JSON,
+  System.SysUtils,
+
+
+  FireDAC.UI.Intf,
+  FireDAC.FMXUI.Wait,
+  FireDAC.Stan.Intf,
+  FireDAC.Comp.UI,
+
+  FireDAC.Stan.Option,
+  FireDAC.Stan.Error,
+  FireDAC.Phys.Intf,
+  FireDAC.Stan.Def,
+  FireDAC.Stan.Pool,
+  FireDAC.Stan.Async,
+  FireDAC.Phys,
+  FireDAC.Phys.PG,
+  FireDAC.VCLUI.Wait,
+  FireDAC.Comp.Client,
+  FireDAC.Stan.Param,
+  FireDAC.DatS,
+  FireDAC.DApt.Intf,
+  FireDAC.DApt,
+  FireDAC.Comp.DataSet,
+
+  DataSetConverter4D.Helper,
+  DataSetConverter4D.Impl,
+
+  Model.Conexao.Interfaces,
+  Controller.Conexao.Factory.Interfaces;
+
+type
+  TConexaoFiredac = class(TInterfacedObject, iConexao)
+    private
+      FConexao          : TFDConnection;
+      FQuery            : TFDQuery;
+      FDriverPostgreSQL : TFDPhysPgDriverLink;
+      FAsJsonArray      : TJsonArray;
+      FController       : iControllerConexaoFactory;
+      procedure LerArquivoIni;
+    public
+      constructor Create;
+      destructor Destroy; override;
+      class function New : iConexao;
+
+      function Params(Param: String; Value: Variant): iConexao; overload;
+      function Params(Param: String)                : Variant;       overload;
+      function DataSet(DataSource: TDataSource)     : iConexao; overload;
+      function DataSet                              : TDataSet;      overload;
+      function ExecSQL                              : iConexao;
+      function Open                                 : iConexao;
+      function Close                                : iConexao;
+      function SQL(Value: String)                   : iConexao;
+      function AsJsonArray(Value: TJsonArray)       : iConexao; overload;
+      function AsJsonArray                          : TJsonArray;    overload;
+  end;
+
+implementation
+
+uses
+  Controller.Conexao.Factory;
+
+{ TConexaoMySQL }
+constructor TConexaoFiredac.Create;
+begin
+  FConexao          := TFDConnection.Create(nil);
+  FQuery            := TFDQuery.Create(nil);
+  FDriverPostgreSQL := TFDPhysPgDriverLink.Create(nil);
+  FAsJsonArray      := TJsonArray.Create;
+  FController       := TControllerConexaoFactory.New;
+  LerArquivoIni;
+end;
+
+destructor TConexaoFiredac.Destroy;
+begin
+  FreeAndNil(FConexao);
+  FreeAndNil(FQuery);
+  FreeAndNil(FDriverPostgreSQL);
+  FreeAndNil(FAsJsonArray);
+  inherited;
+end;
+
+class function TConexaoFiredac.New: iConexao;
+begin
+  Result := Self.Create;
+end;
+
+procedure TConexaoFiredac.LerArquivoIni;
+begin
+  try
+    FDriverPostgreSQL.VendorHome := FController.ConexaoFactory.ConexaoConfiguracao.VendorHome;
+    FQuery.Connection            := FConexao;
+    FConexao.Params.DriverID     := FController.ConexaoFactory.ConexaoConfiguracao.DriverName;
+    FConexao.Params.Database     := FController.ConexaoFactory.ConexaoConfiguracao.Database;
+    FConexao.Params.UserName     := FController.ConexaoFactory.ConexaoConfiguracao.UserName;
+    FConexao.Params.Password     := FController.ConexaoFactory.ConexaoConfiguracao.Password;
+    FConexao.Params.Add('Port='+IntToStr(FController.ConexaoFactory.ConexaoConfiguracao.Port));
+    FConexao.Params.Add('utf8mb4');
+    FConexao.Params.Add('Server='+FController.ConexaoFactory.ConexaoConfiguracao.ServerHost);
+    FConexao.LoginPrompt := False;
+    FConexao.Connected;
+  except
+    on e: Exception do
+    raise Exception.Create('Erro ao tentar se conectar com a base de dados: ' +
+      e.Message);
+  end;
+end;
+
+function TConexaoFiredac.Params(Param: String; Value: Variant): iConexao;
+begin
+  Result := Self;
+  FQuery.ParamByName(Param).Value := Value;
+end;
+
+function TConexaoFiredac.Params(Param: String): Variant;
+begin
+  Result := FQuery.ParamByName(Param).Value;
+end;
+
+function TConexaoFiredac.DataSet(DataSource: TDataSource): iConexao;
+begin
+  Result := Self;
+  DataSource.DataSet := FQuery;
+end;
+
+function TConexaoFiredac.DataSet: TDataSet;
+begin
+  Result := FQuery
+end;
+
+
+function TConexaoFiredac.Close: iConexao;
+begin
+  Result := Self;
+  FQuery.Close;
+end;
+
+function TConexaoFiredac.SQL(Value: String): iConexao;
+begin
+  Result := Self;
+  FQuery.SQL.Clear;
+  FQuery.SQL.Add(Value);
+end;
+
+
+function TConexaoFiredac.Open: iConexao;
+begin
+  Result := Self;
+  FQuery.Open;
+end;
+
+function TConexaoFiredac.ExecSQL: iConexao;
+begin
+  Result := Self;
+  FQuery.ExecSQL;
+end;
+
+function TConexaoFiredac.AsJsonArray(Value: TJsonArray): iConexao;
+begin
+  Result := Self;
+  FAsJsonArray := Value;
+end;
+
+function TConexaoFiredac.AsJsonArray: TJsonArray;
+begin
+  Result := FAsJsonArray;
+end;
+
+end.

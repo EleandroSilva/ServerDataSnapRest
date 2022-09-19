@@ -18,7 +18,8 @@ uses
   Datasnap.DSServerMetadata,
   Datasnap.DSClientMetadata,
   Datasnap.DSCommonServer,
-  Datasnap.DSHTTP;
+  Datasnap.DSHTTP, FireDAC.UI.Intf, FireDAC.FMXUI.Wait, FireDAC.Stan.Intf,
+  FireDAC.Comp.UI, System.JSON, Data.DBXCommon;
 
 type
   TWebModule1 = class(TWebModule)
@@ -45,6 +46,9 @@ type
     procedure WebModuleCreate(Sender: TObject);
     procedure ServerEntidadePessoaGetClass(DSServerClass: TDSServerClass;
       var PersistentClass: TPersistentClass);
+    procedure DSRESTWebDispatcher1FormatResult(Sender: TObject;
+      var ResultVal: TJSONValue; const Command: TDBXCommand;
+      var Handled: Boolean);
   private
     { Private declarations }
     FServerFunctionInvokerAction: TWebActionItem;
@@ -67,6 +71,20 @@ uses
   Web.WebReq,
 
   View.Entidade.Pessoa;
+
+procedure TWebModule1.DSRESTWebDispatcher1FormatResult(Sender: TObject;
+  var ResultVal: TJSONValue; const Command: TDBXCommand; var Handled: Boolean);
+Var
+  lcvJSONValue : TJSONValue;
+begin
+  lcvJSONValue := ResultVal;
+  try
+    ResultVal := TJSONArray(lcvJSONValue).Remove(0);
+  finally
+    lcvJSONValue.Free;
+  end;
+  Handled := True;
+end;
 
 procedure TWebModule1.DSServerClass1GetClass(
   DSServerClass: TDSServerClass; var PersistentClass: TPersistentClass);

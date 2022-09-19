@@ -17,7 +17,7 @@ uses
   FMX.Edit,
   IdHTTPWebBrokerBridge,
   Web.HTTPApp,
-  FMX.Controls.Presentation;
+  FMX.Controls.Presentation, Controller.Conexao.Factory.Interfaces;
 
 type
   TfrmServidorBeMoreWebRest = class(TForm)
@@ -26,11 +26,14 @@ type
     EditPort: TEdit;
     Label1: TLabel;
     ButtonOpenBrowser: TButton;
+    Button1: TButton;
     procedure FormCreate(Sender: TObject);
     procedure ButtonStartClick(Sender: TObject);
     procedure ButtonStopClick(Sender: TObject);
     procedure ButtonOpenBrowserClick(Sender: TObject);
+    procedure Button1Click(Sender: TObject);
   private
+    FController : iControllerConexaoFactory;
     FServer: TIdHTTPWebBrokerBridge;
     procedure StartServer;
     procedure ApplicationIdle(Sender: TObject; var Done: Boolean);
@@ -49,13 +52,23 @@ implementation
 uses
   WinApi.Windows,
   Winapi.ShellApi,
-  Datasnap.DSSession;
+  Datasnap.DSSession, Controller.Conexao.Factory;
 
 procedure TfrmServidorBeMoreWebRest.ApplicationIdle(Sender: TObject; var Done: Boolean);
 begin
   ButtonStart.Enabled := not FServer.Active;
   ButtonStop.Enabled := FServer.Active;
   EditPort.Enabled := not FServer.Active;
+end;
+
+procedure TfrmServidorBeMoreWebRest.Button1Click(Sender: TObject);
+begin
+  FController := TControllerConexaoFactory.New;
+  FController
+            .ConexaoFactory
+            .ConexaoFiredac
+            .SQL('Select * from pessoa')
+            .Open;
 end;
 
 procedure TfrmServidorBeMoreWebRest.ButtonOpenBrowserClick(Sender: TObject);

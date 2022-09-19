@@ -10,22 +10,22 @@ uses
 type
   TConexaoFactory = class(TInterfacedObject, iConexaoFactory)
     private
-      FConexaoFiredacMySQL      : iConexaoMySQL;
-      FConexaoConfiguracaoMySQL : iConexaoConfiguracaoMySQL;
+      FConexaoFiredac      : iConexao;
+      FConexaoConfiguracao : iConexaoConfiguracao;
     public
       constructor Create;
       destructor Destroy; override;
       class function New : iConexaoFactory;
 
-      function ConexaoFiredacMySQL      : iConexaoMySQL;
-      function ConexaoConfiguracaoMySQL : iConexaoConfiguracaoMySQL;
+      function ConexaoFiredac      : iConexao;
+      function ConexaoConfiguracao : iConexaoConfiguracao;
   end;
 
 implementation
 
 uses
-  Model.Conexao.Configuracao.MySQL,
-  Model.Conexao.Firedac.MySQL;
+  Model.Conexao.Configuracao,
+  Model.Conexao.Firedac;
 
 { TConexaoFactory }
 
@@ -44,18 +44,18 @@ begin
   Result := Self.Create;
 end;
 
-function TConexaoFactory.ConexaoConfiguracaoMySQL: iConexaoConfiguracaoMySQL;
+function TConexaoFactory.ConexaoConfiguracao: iConexaoConfiguracao;
 begin
-  if not Assigned(FConexaoConfiguracaoMySQL) then
-    FConexaoConfiguracaoMySQL := TConexaoConfiguracaoMySQL.New;
-  Result := FConexaoConfiguracaoMySQL;
+  if not Assigned(FConexaoConfiguracao) then
+    FConexaoConfiguracao := TConexaoConfiguracao.New;
+  Result := FConexaoConfiguracao;
 end;
 
-function TConexaoFactory.ConexaoFiredacMySQL: iConexaoMySQL;
+function TConexaoFactory.ConexaoFiredac: iConexao;
 begin
-  if not Assigned(FConexaoFiredacMySQL) then
-    FConexaoFiredacMySQL := TConexaoFiredacMySQL.New;
-  Result := FConexaoFiredacMySQL;
+  if not Assigned(FConexaoFiredac) then
+    FConexaoFiredac := TConexaoFiredac.New;
+  Result := FConexaoFiredac;
 end;
 
 end.
