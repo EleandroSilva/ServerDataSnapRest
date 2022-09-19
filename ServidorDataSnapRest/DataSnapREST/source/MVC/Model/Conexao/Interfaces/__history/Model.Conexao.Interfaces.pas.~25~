@@ -17,6 +17,9 @@ type
     function Open                                 : iConexao;
     function Close                                : iConexao;
     function SQL(Value: String)                   : iConexao;
+    function StartTransaction                     : iConexao;
+    function Commit                               : iConexao;
+    function Rollback                             : iConexao;
   end;
 
 implementation

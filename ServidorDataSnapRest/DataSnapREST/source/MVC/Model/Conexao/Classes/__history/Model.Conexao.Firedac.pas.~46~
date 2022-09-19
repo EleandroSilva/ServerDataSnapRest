@@ -5,7 +5,7 @@ interface
 uses
   Data.DB,
   System.SysUtils,
-
+  System.JSON,
 
   FireDAC.UI.Intf,
   FireDAC.FMXUI.Wait,
@@ -32,7 +32,7 @@ uses
   DataSetConverter4D.Impl,
 
   Model.Conexao.Interfaces,
-  Controller.Conexao.Factory.Interfaces, System.JSON,
+  Controller.Conexao.Factory.Interfaces,
   Model.Entidade.Pessoa.Interfaces;
 
 type
@@ -42,7 +42,7 @@ type
       FQuery            : TFDQuery;
       FDriverPostgreSQL : TFDPhysPgDriverLink;
       FController       : iControllerConexaoFactory;
-
+      FAsJsonArray      : iConexao;
       procedure LerArquivoIni;
     public
       constructor Create;
@@ -57,10 +57,11 @@ type
       function Open                                  : iConexao;
       function Close                                 : iConexao;
       function SQL(Value: String)                    : iConexao;
-      function AsJsonArray                           : TJsonArray;
-      function DataSetJSONOb(DataSetJSON :TDataSet)  : iConexao; overload;
-      function DataSetJSONOb                         : TDataSet;  overload;
-      function &End : iConexao;
+      function AsJsonArray(JSON :TJsonArray)        : iConexao; overload;
+      function AsJsonArray                          : TJsonArray; overload;
+      function StartTransaction                      : iConexao;
+      function Commit                                : iConexao;
+      function Rollback                              : iConexao;
   end;
 
 implementation
@@ -75,6 +76,7 @@ begin
   FQuery            := TFDQuery.Create(nil);
   FDriverPostgreSQL := TFDPhysPgDriverLink.Create(nil);
   FController       := TControllerConexaoFactory.New;
+  FAsJsonArray      := TJsonArray.Create;
   LerArquivoIni;
 end;
 
@@ -83,6 +85,7 @@ begin
   FreeAndNil(FConexao);
   FreeAndNil(FQuery);
   FreeAndNil(FDriverPostgreSQL);
+  FreeAndNil(FAsJsonArray);
   inherited;
 end;
 
@@ -134,15 +137,15 @@ begin
   Result := FQuery;
 end;
 
-function TConexaoFiredac.DataSetJSONOb(DataSetJSON: TDataSet): iConexao;
+function TConexaoFiredac.AsJsonArray(JSON: TJsonArray): iConexao;
 begin
-  Result      := Self;
-  DataSetJSON := FQuery;
+  Result := Self;
+  FAsJsonArray := JSON;
 end;
 
-function TConexaoFiredac.DataSetJSONOb: TDataSet;
+function TConexaoFiredac.AsJsonArray: TJsonArray;
 begin
-  Result := FQuery;
+  Result := FAsJsonArray;
 end;
 
 function TConexaoFiredac.Close: iConexao;
@@ -159,7 +162,6 @@ begin
   FQuery.SQL.Add(Value);
 end;
 
-
 function TConexaoFiredac.Open: iConexao;
 begin
   Result := Self;
@@ -172,14 +174,22 @@ begin
   FQuery.ExecSQL;
 end;
 
-function TConexaoFiredac.&End: iConexao;
+function TConexaoFiredac.Commit: iConexao;
 begin
   Result := Self;
+  FConexao.Commit;
 end;
 
-function TConexaoFiredac.AsJsonArray: TJsonArray;
+function TConexaoFiredac.Rollback: iConexao;
 begin
-  Result := FQuery.asJsonArray;
+  Result := Self;
+  FConexao.Rollback;
+end;
+
+function TConexaoFiredac.StartTransaction: iConexao;
+begin
+  Result := Self;
+  FConexao.StartTransaction;
 end;
 
 end.

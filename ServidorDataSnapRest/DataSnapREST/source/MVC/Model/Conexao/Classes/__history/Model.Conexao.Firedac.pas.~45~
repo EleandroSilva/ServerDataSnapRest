@@ -5,7 +5,7 @@ interface
 uses
   Data.DB,
   System.SysUtils,
-
+  System.JSON,
 
   FireDAC.UI.Intf,
   FireDAC.FMXUI.Wait,
@@ -32,7 +32,7 @@ uses
   DataSetConverter4D.Impl,
 
   Model.Conexao.Interfaces,
-  Controller.Conexao.Factory.Interfaces, System.JSON,
+  Controller.Conexao.Factory.Interfaces,
   Model.Entidade.Pessoa.Interfaces;
 
 type
@@ -58,8 +58,6 @@ type
       function Close                                 : iConexao;
       function SQL(Value: String)                    : iConexao;
       function AsJsonArray                           : TJsonArray;
-      function DataSetJSONOb(DataSetJSON :TDataSet)  : iConexao; overload;
-      function DataSetJSONOb                         : TDataSet;  overload;
       function StartTransaction                      : iConexao;
       function Commit                                : iConexao;
       function Rollback                              : iConexao;
@@ -136,17 +134,6 @@ begin
   Result := FQuery;
 end;
 
-function TConexaoFiredac.DataSetJSONOb(DataSetJSON: TDataSet): iConexao;
-begin
-  Result      := Self;
-  DataSetJSON := FQuery;
-end;
-
-function TConexaoFiredac.DataSetJSONOb: TDataSet;
-begin
-  Result := FQuery;
-end;
-
 function TConexaoFiredac.Close: iConexao;
 begin
   Result := Self;
@@ -161,7 +148,6 @@ begin
   FQuery.SQL.Add(Value);
 end;
 
-
 function TConexaoFiredac.Open: iConexao;
 begin
   Result := Self;
@@ -174,14 +160,27 @@ begin
   FQuery.ExecSQL;
 end;
 
-function TConexaoFiredac.&End: iConexao;
-begin
-  Result := Self;
-end;
-
 function TConexaoFiredac.AsJsonArray: TJsonArray;
 begin
   Result := FQuery.asJsonArray;
+end;
+
+function TConexaoFiredac.Commit: iConexao;
+begin
+  Result := Self;
+  FConexao.Commit;
+end;
+
+function TConexaoFiredac.Rollback: iConexao;
+begin
+  Result := Self;
+  FConexao.Rollback;
+end;
+
+function TConexaoFiredac.StartTransaction: iConexao;
+begin
+  Result := Self;
+  FConexao.StartTransaction;
 end;
 
 end.

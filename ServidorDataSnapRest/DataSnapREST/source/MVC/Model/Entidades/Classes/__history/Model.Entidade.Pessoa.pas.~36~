@@ -67,15 +67,15 @@ begin
               .ConexaoFiredac
               .SQL(FSQL)
               .Open
-              .DataSet()
+              .DataSet
             .AsJsonArray else
  Result:= FQuery
              .ConexaoFactory
              .ConexaoFiredac
              .SQL(FSQL+' WHERE IDPESSOA= '+ Key)
              .Open
-             .DataSet()
-           .AsJsonArray;
+             .DataSet
+            .AsJsonArray;
 end;
 
 function TEntidadePessoa.Post(const Key: String; jObject: TJsonObject): iEntidadePessoa;

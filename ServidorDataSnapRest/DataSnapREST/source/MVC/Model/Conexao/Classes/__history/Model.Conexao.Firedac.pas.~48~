@@ -57,6 +57,9 @@ type
       function Open                                  : iConexao;
       function Close                                 : iConexao;
       function SQL(Value: String)                    : iConexao;
+      function StartTransaction                      : iConexao;
+      function Commit                                : iConexao;
+      function Rollback                              : iConexao;
   end;
 
 implementation
@@ -156,5 +159,22 @@ begin
   FQuery.ExecSQL;
 end;
 
+function TConexaoFiredac.Commit: iConexao;
+begin
+  Result := Self;
+  FConexao.Commit;
+end;
+
+function TConexaoFiredac.Rollback: iConexao;
+begin
+  Result := Self;
+  FConexao.Rollback;
+end;
+
+function TConexaoFiredac.StartTransaction: iConexao;
+begin
+  Result := Self;
+  FConexao.StartTransaction;
+end;
 
 end.

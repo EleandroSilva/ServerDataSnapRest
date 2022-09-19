@@ -4,7 +4,7 @@ interface
 
 uses
   Data.DB,
-  System.JSON;
+  System.JSON, FireDAC.Comp.Client;
 
 type
   iConexao = interface
@@ -17,9 +17,11 @@ type
     function Open                                 : iConexao;
     function Close                                : iConexao;
     function SQL(Value: String)                   : iConexao;
-    function AsJsonArray                          : TJsonArray;
-    function DataSetJSONOb(DataSetJSON :TDataSet) : iConexao; overload;
-    function DataSetJSONOb                        : TDataSet;  overload;
+    function AsJsonArray(JSON :TJsonArray)        : iConexao; overload;
+    function AsJsonArray                          : TJsonArray; overload;
+    function StartTransaction                     : iConexao;
+    function Commit                               : iConexao;
+    function Rollback                             : iConexao;
   end;
 
 implementation

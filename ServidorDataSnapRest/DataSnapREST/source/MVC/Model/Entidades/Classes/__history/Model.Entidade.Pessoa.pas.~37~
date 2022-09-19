@@ -15,7 +15,6 @@ type
   TEntidadePessoa = class(TInterfacedObject, iEntidadePessoa)
     private
       FQuery : iControllerConexaoFactory;
-
       const FSQL ='SELECT * FROM PESSOA';
     public
       constructor Create;
@@ -42,12 +41,12 @@ end;
 
 function TEntidadePessoa.Delete(const Key: String): iEntidadePessoa;
 begin
+  Result := Self;
   FQuery
       .ConexaoFactory
       .ConexaoFiredac
-      .SQL('DEELETE FROM IDPESSOA=:IDPESSOA')
-      .SQL('WHERE IDPESSOA='+Key)
-      .ExecSQL;
+      .SQL('DELETE FROM PESSOA WHERE IDPESSOA='+ Key)
+     .ExecSQL;
 end;
 
 destructor TEntidadePessoa.Destroy;
@@ -68,13 +67,15 @@ begin
               .ConexaoFiredac
               .SQL(FSQL)
               .Open
+              .DataSet
             .AsJsonArray else
  Result:= FQuery
              .ConexaoFactory
              .ConexaoFiredac
              .SQL(FSQL+' WHERE IDPESSOA= '+ Key)
              .Open
-           .AsJsonArray;
+             .DataSet
+            .AsJsonArray;
 end;
 
 function TEntidadePessoa.Post(const Key: String; jObject: TJsonObject): iEntidadePessoa;
@@ -99,7 +100,6 @@ begin
       .Open
       .DataSet()
       .FromJSONObject(jObject);
-
 end;
 
 end.

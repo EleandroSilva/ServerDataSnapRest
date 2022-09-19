@@ -9,13 +9,14 @@ uses
   DataSetConverter4D.Impl,
 
   Model.Entidade.Pessoa.Interfaces,
-  Controller.Conexao.Factory.Interfaces;
+  Controller.Conexao.Factory.Interfaces, Data.DB, FireDAC.Comp.Client;
 
 type
   TEntidadePessoa = class(TInterfacedObject, iEntidadePessoa)
     private
       FQuery : iControllerConexaoFactory;
-
+      FDQuery : TFDQuery;
+      FDataSource : TDataSource;
       const FSQL ='SELECT * FROM PESSOA';
     public
       constructor Create;
@@ -31,13 +32,20 @@ type
 implementation
 
 uses
-  Controller.Conexao.Factory;
+  Controller.Conexao.Factory, System.SysUtils;
 
 { TPessoa }
 
 constructor TEntidadePessoa.Create;
 begin
   FQuery := TControllerConexaoFactory.New;
+  FDataSource := TDataSource.Create(nil);
+  FDQuery     := TFDQuery.Create(nil);
+  FDQuery.Connection := FQuery
+                            .ConexaoFactory
+                            .ConexaoFiredac
+                            .Conexao;
+  FDQuery.CachedUpdates := True;
 end;
 
 function TEntidadePessoa.Delete(const Key: String): iEntidadePessoa;
@@ -46,13 +54,13 @@ begin
   FQuery
       .ConexaoFactory
       .ConexaoFiredac
-      .SQL('DEELETE FROM IDPESSOA=:IDPESSOA')
-      .SQL('WHERE IDPESSOA='+Key)
-      .ExecSQL;
+      .SQL('DELETE FROM PESSOA WHERE IDPESSOA='+ Key)
+     .ExecSQL;
 end;
 
 destructor TEntidadePessoa.Destroy;
 begin
+  FreeAndNil(FDQuery);
   inherited;
 end;
 
@@ -93,14 +101,23 @@ end;
 function TEntidadePessoa.Put(const Key: String; jObject: TJsonObject): iEntidadePessoa;
 begin
   Result := Self;
+  FDQuery.Close;
+  FDQuery.SQL.Clear;
+  FDQuery.SQL.Add(FSQL + ' WHERE 1=2');
+  FDQuery.Open;
+  FDQuery.FromJSONObject(jObject);
+  FDQuery.ApplyUpdates(-1)
+
+
+  {
   FQuery
       .ConexaoFactory
       .ConexaoFiredac
       .SQL(FSQL+' WHERE 1=2')
       .Open
-      .DataSet()
+      .DataSet
       .FromJSONObject(jObject);
-
+      }
 end;
 
 end.

@@ -80,7 +80,7 @@ object frmServidorBeMoreWebRest: TfrmServidorBeMoreWebRest
     Viewport.Height = 117.000000000000000000
   end
   object DataSource1: TDataSource
-    Left = 176
+    Left = 184
     Top = 32
   end
 end

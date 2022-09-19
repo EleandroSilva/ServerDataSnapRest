@@ -17,6 +17,12 @@ type
     function Open                                 : iConexao;
     function Close                                : iConexao;
     function SQL(Value: String)                   : iConexao;
+//    function AsJsonArray                          : TJsonArray;
+//    function AsFromJSONObject(Value: TJSONObject) : iConexao; overload;
+//    function AsFromJSONObject                     : TJSONObject; overload;
+    function StartTransaction                     : iConexao;
+    function Commit                               : iConexao;
+    function Rollback                             : iConexao;
   end;
 
 implementation
