@@ -1,0 +1,896 @@
+unit ufrmViewNovoPedido;
+
+interface
+
+uses
+  Winapi.Windows,
+  Winapi.Messages,
+  System.SysUtils,
+  System.Variants,
+  System.Classes,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.DBCtrls,
+  Vcl.StdCtrls,
+  Vcl.Buttons,
+  Vcl.ExtCtrls,
+  Data.DB,
+  Vcl.Grids,
+  Vcl.DBGrids,
+  Vcl.ComCtrls,
+  Datasnap.DBClient,
+  frxClass,
+  frxDBSet,
+
+  Controller.Interfaces,
+  Controller;
+
+type
+  TfrmViewNovoPedido = class(TForm)
+    pBotoes: TPanel;
+    pcPrincipal: TPageControl;
+    tbPedido: TTabSheet;
+    pPesquisar: TPanel;
+    pDigitaConformePesquisa: TPanel;
+    Label1: TLabel;
+    edtPesquisa: TEdit;
+    dbgPedido: TDBGrid;
+    tbPagamento: TTabSheet;
+    pItensdoPedido: TPanel;
+    dbgPedidoItensLancando: TDBGrid;
+    pDadosPedido: TPanel;
+    lIdPedido: TLabel;
+    lDataEmissao: TLabel;
+    lValorPedido: TLabel;
+    edtId: TEdit;
+    edtValorPedido: TEdit;
+    btnFiltrar: TBitBtn;
+    btnTodos: TBitBtn;
+    btnIncluir: TBitBtn;
+    btnAlterar: TBitBtn;
+    btnExcluir: TBitBtn;
+    btnConsultar: TBitBtn;
+    bbSair: TBitBtn;
+    lCliente: TLabel;
+    edtNomeCliente: TEdit;
+    lNomeCliente: TLabel;
+    lDadosPedido: TLabel;
+    lItensdoPedido: TLabel;
+    lIdProduto: TLabel;
+    edtIdProduto: TEdit;
+    lNomeProduto: TLabel;
+    edtNomeProduto: TEdit;
+    edtQuantidade: TEdit;
+    lQuantidade: TLabel;
+    edtValorUnitario: TEdit;
+    lValorUnitario: TLabel;
+    lValorProdutos: TLabel;
+    edtValorProdutos: TEdit;
+    btnConfirmaItem: TBitBtn;
+    btnCancelaItem: TBitBtn;
+    dbgPedidoItens: TDBGrid;
+    edtIdCliente: TEdit;
+    btnFinalizarPedido: TBitBtn;
+    dtDataEmissao: TDateTimePicker;
+    dsPedidoItens: TDataSource;
+    frxrImprimirPedido: TfrxReport;
+    frxdatasetPedido: TfrxDBDataset;
+    frxdatasetPedidoItens: TfrxDBDataset;
+    btnImprimirPedido: TBitBtn;
+    Panel2: TPanel;
+    dsPedido: TDataSource;
+    cdsPedidoItens: TClientDataSet;
+    cdsPedidoItensid: TIntegerField;
+    cdsPedidoItensidpedido: TIntegerField;
+    cdsPedidoItensidproduto: TIntegerField;
+    cdsPedidoItensnome: TStringField;
+    cdsPedidoItensquantidade: TCurrencyField;
+    cdsPedidoItensvalorunitario: TCurrencyField;
+    cdsPedidoItensvalorprodutos: TCurrencyField;
+    cdsPedido: TClientDataSet;
+    cdsPedidoId: TIntegerField;
+    cdsPedidoidcliente: TIntegerField;
+    cdsPedidoNome: TStringField;
+    cdsPedidodataemissao: TDateField;
+    cdsPedidovalorpedido: TCurrencyField;
+    rgEscolhaTipoFiltro: TRadioGroup;
+    Panel6: TPanel;
+    Label3: TLabel;
+    Label4: TLabel;
+    Label5: TLabel;
+    DataFinal: TDateTimePicker;
+    DataInicial: TDateTimePicker;
+    cbFiltrarPorPeriodo: TCheckBox;
+    Panel1: TPanel;
+    dbNavegador: TDBNavigator;
+    Label2: TLabel;
+    procedure FormDestroy(Sender: TObject);
+    procedure FormKeyPress(Sender: TObject; var Key: Char);
+    procedure FormKeyUp(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure FormCreate(Sender: TObject);
+    procedure edtIdProdutoKeyPress(Sender: TObject; var Key: Char);
+    procedure edtQuantidadeKeyPress(Sender: TObject; var Key: Char);
+    procedure btnConfirmaItemClick(Sender: TObject);
+    procedure bbSairClick(Sender: TObject);
+    procedure FormClose(Sender: TObject; var Action: TCloseAction);
+    procedure btnIncluirClick(Sender: TObject);
+    procedure edtIdClienteKeyPress(Sender: TObject; var Key: Char);
+    procedure dsPedidoDataChange(Sender: TObject; Field: TField);
+    procedure btnTodosClick(Sender: TObject);
+    procedure edtQuantidadeExit(Sender: TObject);
+    procedure btnImprimirPedidoClick(Sender: TObject);
+    procedure btnFiltrarClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure btnFinalizarPedidoClick(Sender: TObject);
+    procedure dbgPedidoItensDrawColumnCell(Sender: TObject; const Rect: TRect;
+      DataCol: Integer; Column: TColumn; State: TGridDrawState);
+    procedure dbgPedidoDrawColumnCell(Sender: TObject; const Rect: TRect;
+      DataCol: Integer; Column: TColumn; State: TGridDrawState);
+    procedure dbgPedidoItensLancandoDrawColumnCell(Sender: TObject;
+      const Rect: TRect; DataCol: Integer; Column: TColumn;
+      State: TGridDrawState);
+    procedure btnCancelaItemClick(Sender: TObject);
+    procedure dbgPedidoItensLancandoKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure btnExcluirClick(Sender: TObject);
+    procedure btnAlterarClick(Sender: TObject);
+    procedure edtIdClienteExit(Sender: TObject);
+    procedure edtIdProdutoKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+    procedure edtIdProdutoExit(Sender: TObject);
+    procedure edtIdClienteKeyDown(Sender: TObject; var Key: Word;
+      Shift: TShiftState);
+  private
+    FController: iController;
+    FSomar: Currency;
+    FInserir: Boolean;
+    FEditar: Boolean;
+
+    procedure LimpaEdits;
+    procedure LimpaDataSet;
+
+    procedure AtualizaTotalGeral;
+
+    procedure IncluirNovoPedido;
+    procedure IncluirPedidoItens;
+    procedure IncluirPedidoItensAlterar;
+    procedure PreencherEditPedido;
+    procedure PreencherEditPedidoItens;
+
+    procedure ExcluirPedido;
+    procedure ExcluirItensPedido;
+
+    procedure SalvarPedido;
+    procedure ParametroData;
+    procedure HabilitarBotoes;
+    procedure DesabilitarBotoes;
+    procedure UpdatePedido;
+    procedure UpdatePedidoItens;
+    procedure SomenteNumeros(var aKey: Char);
+
+    procedure FiltrarPedidoItens(Value: Variant);
+
+    function SomarValorProdutos: Currency;
+    function FiltrarPedido(Value: Variant): Boolean;
+    function FiltrarCliente(Value: Variant): Boolean;
+    function FiltrarProduto(Value: Variant): Boolean;
+
+  const
+    FMSG = ' Tecla F1 pesquisar';
+
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmViewNovoPedido: TfrmViewNovoPedido;
+
+implementation
+
+uses
+  ufrmViewPesquisarProdutos,
+  ufrmViewPesquisarClientes;
+
+{$R *.dfm}
+
+procedure TfrmViewNovoPedido.HabilitarBotoes;
+begin
+  btnAlterar.Enabled := True;
+  btnExcluir.Enabled := True;
+  btnImprimirPedido.Enabled := True;
+end;
+
+procedure TfrmViewNovoPedido.DesabilitarBotoes;
+begin
+  btnAlterar.Enabled := False;
+  btnExcluir.Enabled := False;
+  btnImprimirPedido.Enabled := False;
+end;
+
+procedure TfrmViewNovoPedido.AtualizaTotalGeral;
+begin
+  FSomar := 0;
+  dsPedidoItens.DataSet.First;
+  while not dsPedidoItens.DataSet.Eof do
+  begin
+    FSomar := FSomar + dsPedidoItens.DataSet.FieldByName('ValorProdutos').AsCurrency;
+    dsPedidoItens.DataSet.Next;
+  end;
+
+  edtValorPedido.Text := FormatFloat('R$ #,##0.00', FSomar);
+end;
+
+procedure TfrmViewNovoPedido.bbSairClick(Sender: TObject);
+begin
+  frmViewNovoPedido.Close;
+end;
+
+procedure TfrmViewNovoPedido.btnImprimirPedidoClick(Sender: TObject);
+begin
+  if not dsPedido.DataSet.IsEmpty then
+  begin
+    frxdatasetPedido.DataSource := dsPedido;
+    frxdatasetPedidoItens.DataSource := dsPedidoItens;
+    frxrImprimirPedido.ShowReport();
+  end;
+end;
+
+procedure TfrmViewNovoPedido.btnAlterarClick(Sender: TObject);
+begin
+  IncluirPedidoItensAlterar;
+  FInserir := False;
+  FEditar := True;
+  btnFinalizarPedido.Enabled := True;
+  btnFinalizarPedido.Click;
+end;
+
+procedure TfrmViewNovoPedido.btnCancelaItemClick(Sender: TObject);
+begin
+  ExcluirItensPedido;
+end;
+
+procedure TfrmViewNovoPedido.btnConfirmaItemClick(Sender: TObject);
+begin
+  if MessageBox(handle, 'Deseja lançando mais itens neste pedido?', 'Aviso',mb_IconQuestion or mb_Yesno) = mrYes then
+  begin
+    edtIdProduto.SetFocus;
+  end
+  else
+  begin
+    btnFinalizarPedido.Enabled := True;
+    btnFinalizarPedido.Click;
+  end;
+end;
+
+procedure TfrmViewNovoPedido.btnExcluirClick(Sender: TObject);
+begin
+  if MessageDlg('Deseja excluir este Pedido?', mtConfirmation, [mbYes, mbNo], 0)= mrYes then
+  begin
+    ExcluirPedido;
+    DesabilitarBotoes;
+  end
+  else
+    raise Exception.Create('Usuário optou para não excluir o pedido!');
+end;
+
+procedure TfrmViewNovoPedido.btnFiltrarClick(Sender: TObject);
+begin
+  if edtPesquisa.Text = '' then
+  begin
+    ShowMessage('Para filtrar o pedido, favor informar o Id do Pedido, no campo Digite Id pedido para filtrar o mesmo!');
+    edtPesquisa.SetFocus;
+  end
+  else if FiltrarPedido(edtPesquisa.Text) then
+  begin
+    PreencherEditPedido;
+    PreencherEditPedidoItens;
+    pcPrincipal.TabIndex := 1;
+    edtIdCliente.SetFocus;
+    dbgPedidoItensLancando.DataSource := dsPedidoItens;
+  end
+  else
+  begin
+    edtPesquisa.Clear;
+    edtPesquisa.SetFocus;
+    raise Exception.Create('Registro não encontrado');
+  end;
+end;
+
+procedure TfrmViewNovoPedido.btnIncluirClick(Sender: TObject);
+begin
+  btnIncluir.Enabled := False;
+  IncluirNovoPedido;
+end;
+
+procedure TfrmViewNovoPedido.btnFinalizarPedidoClick(Sender: TObject);
+begin
+  if FInserir then
+    SalvarPedido
+  else
+    UpdatePedido;
+end;
+
+procedure TfrmViewNovoPedido.btnTodosClick(Sender: TObject);
+begin
+  FiltrarPedido(''); // Filtrando todos pedidos por isso parâmetro vazio
+end;
+
+procedure TfrmViewNovoPedido.dbgPedidoDrawColumnCell(Sender: TObject;
+  const Rect: TRect; DataCol: Integer; Column: TColumn; State: TGridDrawState);
+begin
+  if Odd(TDBGrid(Sender).DataSource.DataSet.RecNo) then
+    TDBGrid(Sender).Canvas.Brush.Color := clSkyBlue
+  else
+    TDBGrid(Sender).Canvas.Brush.Color := clWhite;
+
+  if (State = [GdSelected]) or (State = [GdFocused]) or
+    (State = [GdSelected, GdFocused]) then
+  begin
+    TDBGrid(Sender).Canvas.Brush.Color := cl3DLight;
+    TDBGrid(Sender).Canvas.Font.Color := clBlack;
+  end;
+  TDBGrid(Sender).DefaultDrawDataCell(Rect, Column.Field, State);
+end;
+
+procedure TfrmViewNovoPedido.dbgPedidoItensDrawColumnCell(Sender: TObject;
+  const Rect: TRect; DataCol: Integer; Column: TColumn; State: TGridDrawState);
+begin
+  if Odd(TDBGrid(Sender).DataSource.DataSet.RecNo) then
+    TDBGrid(Sender).Canvas.Brush.Color := clSkyBlue
+  else
+    TDBGrid(Sender).Canvas.Brush.Color := clWhite;
+
+  if (State = [GdSelected]) or (State = [GdFocused]) or
+    (State = [GdSelected, GdFocused]) then
+  begin
+    TDBGrid(Sender).Canvas.Brush.Color := cl3DLight;
+    TDBGrid(Sender).Canvas.Font.Color := clBlack;
+  end;
+  TDBGrid(Sender).DefaultDrawDataCell(Rect, Column.Field, State);
+end;
+
+procedure TfrmViewNovoPedido.dbgPedidoItensLancandoDrawColumnCell
+  (Sender: TObject; const Rect: TRect; DataCol: Integer; Column: TColumn;
+  State: TGridDrawState);
+begin
+  if Odd(TDBGrid(Sender).DataSource.DataSet.RecNo) then
+    TDBGrid(Sender).Canvas.Brush.Color := clSkyBlue
+  else
+    TDBGrid(Sender).Canvas.Brush.Color := clWhite;
+
+  if (State = [GdSelected]) or (State = [GdFocused]) or
+    (State = [GdSelected, GdFocused]) then
+  begin
+    TDBGrid(Sender).Canvas.Brush.Color := cl3DLight;
+    TDBGrid(Sender).Canvas.Font.Color := clBlack;
+  end;
+  TDBGrid(Sender).DefaultDrawDataCell(Rect, Column.Field, State);
+end;
+
+procedure TfrmViewNovoPedido.dbgPedidoItensLancandoKeyDown(Sender: TObject;
+  var Key: Word; Shift: TShiftState);
+begin
+  if Key = VK_DELETE then
+    ExcluirItensPedido;
+end;
+
+procedure TfrmViewNovoPedido.dsPedidoDataChange(Sender: TObject; Field: TField);
+begin
+  if not dsPedido.DataSet.IsEmpty then
+  begin
+    FiltrarPedidoItens(dsPedido.DataSet.FieldByName('id').AsString);
+    HabilitarBotoes;
+  end
+  else
+    DesabilitarBotoes;
+end;
+
+procedure TfrmViewNovoPedido.edtIdClienteExit(Sender: TObject);
+begin
+  if ((FInserir) or (FEditar)) then
+    if edtIdCliente.Text <> '' then
+    begin
+      if Not FiltrarCliente(edtIdCliente.Text) then
+      begin
+        ShowMessage('Cliente não encontrado, ' + FMSG + ' clientes!');
+        edtIdCliente.SetFocus;
+      end
+      else
+        edtIdProduto.SetFocus;
+    end
+    else
+    begin
+      ShowMessage('Informar Id Cliente,' + FMSG + ' clientes!');
+      edtIdCliente.SetFocus;
+    end;
+end;
+
+procedure TfrmViewNovoPedido.edtIdClienteKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if ((FInserir) or (FEditar)) then
+    case Key of
+      VK_F1:
+        begin
+          try
+            IF (ActiveMDIChild <> NIL) AND (ActiveMDIChild.Visible = True) THEN
+              ActiveMDIChild.Close;
+
+            Application.CreateForm(TfrmViewPesquisarClientes,frmViewPesquisarClientes);
+            LockWindowUpdate(handle);
+            frmViewPesquisarClientes.Show;
+          finally
+            LockWindowUpdate(0);
+          end;
+        end;
+    end;
+end;
+
+procedure TfrmViewNovoPedido.edtIdClienteKeyPress(Sender: TObject;
+  var Key: Char);
+begin
+  SomenteNumeros(Key);
+end;
+
+procedure TfrmViewNovoPedido.edtIdProdutoExit(Sender: TObject);
+begin
+  if ((FInserir) or (FEditar)) then
+    if edtIdProduto.Text <> '' then
+    begin
+      if Not FiltrarProduto(edtIdProduto.Text) then
+      begin
+        ShowMessage('Produto não encontrado,' + FMSG + ' produtos!');
+        edtIdProduto.SetFocus;
+      end
+      else
+        edtQuantidade.SetFocus;
+    end
+    else
+    begin
+      ShowMessage('Informar Id Produto,' + FMSG + ' produtos!');
+      edtIdProduto.SetFocus;
+    end;
+end;
+
+procedure TfrmViewNovoPedido.edtIdProdutoKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  if ((FInserir) or (FEditar)) then
+    case Key of
+      VK_F1:
+        begin
+          try
+            IF (ActiveMDIChild <> NIL) AND (ActiveMDIChild.Visible = True) THEN
+              ActiveMDIChild.Close;
+
+            Application.CreateForm(TfrmViewPesquisarProdutos,frmViewPesquisarProdutos);
+            LockWindowUpdate(handle);
+            frmViewPesquisarProdutos.Show;
+          finally
+            LockWindowUpdate(0);
+          end;
+        end;
+    end;
+end;
+
+procedure TfrmViewNovoPedido.edtIdProdutoKeyPress(Sender: TObject;
+  var Key: Char);
+begin
+  SomenteNumeros(Key);
+end;
+
+procedure TfrmViewNovoPedido.edtQuantidadeExit(Sender: TObject);
+begin
+  if edtQuantidade.Text <> '' then
+    if ((FInserir) or (FEditar)) then
+      if StrToInt(edtQuantidade.Text) > 0 then
+      begin
+        IncluirPedidoItens;
+        btnConfirmaItem.Click;
+      end;
+end;
+
+procedure TfrmViewNovoPedido.edtQuantidadeKeyPress(Sender: TObject;
+  var Key: Char);
+begin
+  SomenteNumeros(Key);
+end;
+
+procedure TfrmViewNovoPedido.ExcluirItensPedido;
+begin
+  if not dsPedidoItens.DataSet.IsEmpty then
+    if MessageDlg('Deseja excluir esse Item do Pedido?', mtConfirmation,[mbYes, mbNo], 0) = mrYes then
+    begin
+      dsPedidoItens.DataSet.Delete;
+      AtualizaTotalGeral;
+    end;
+end;
+
+procedure TfrmViewNovoPedido.ExcluirPedido;
+begin
+  if Not dsPedido.DataSet.IsEmpty then
+    FController
+             .Entidade
+             .Pedidos
+             .This
+             .ID(dsPedido.DataSet.FieldByName('id').AsInteger).&End.Excluir
+  else
+    ShowMessage('Encontre o pedido, para excluir!');
+  btnTodos.Click;
+end;
+
+function TfrmViewNovoPedido.FiltrarCliente(Value: Variant): Boolean;
+begin
+  if Value <> '' then
+  begin
+    edtNomeCliente.Text := FController
+                                    .Entidade
+                                    .Clientes
+                                    .This
+                                    .NomeCampoParaFiltro('ID')
+                                    .&End
+                                    .ListarPor(Value)
+                                    .DataSet.FieldByName('Nome').AsString;
+
+    if edtNomeCliente.Text <> '' then
+      Result := True
+    else
+      Result := False;
+  end
+  else
+  begin
+    ShowMessage('Favor informar o id do cliente para continuar lançamento!');
+    edtIdCliente.SetFocus;
+  end;
+end;
+
+function TfrmViewNovoPedido.FiltrarPedido(Value: Variant): Boolean;
+begin
+  if Value <> '' then
+  begin
+    case rgEscolhaTipoFiltro.ItemIndex of
+      0: FController
+             .Entidade
+             .Pedidos
+             .This
+             .TipoFiltro(rgEscolhaTipoFiltro.ItemIndex)
+             .NomeCampoParaFiltro('ID')
+             .&End
+             .ListarPor(edtPesquisa.Text)
+             .DataSet(dsPedido);
+      1: FController
+             .Entidade
+             .Pedidos
+             .This
+             .TipoFiltro(rgEscolhaTipoFiltro.ItemIndex)
+             .NomeCampoParaFiltro('ICliente')
+             .&End
+             .ListarPor(edtPesquisa.Text)
+             .DataSet(dsPedido);
+      2: FController
+             .Entidade
+             .Pedidos
+             .This
+             .TipoFiltro(rgEscolhaTipoFiltro.ItemIndex)
+             .NomeCampoParaFiltro('Nome')
+             .&End
+             .ListarPor(edtPesquisa.Text).DataSet(dsPedido);
+    end;
+
+  end
+  else
+    FController
+             .Entidade
+             .Pedidos
+             .ListarTodos
+             .DataSet(dsPedido);
+  if not dsPedido.DataSet.IsEmpty then
+  begin
+    Result := True;
+    AtualizaTotalGeral;
+  end
+  else
+    Result := False;
+end;
+
+procedure TfrmViewNovoPedido.FiltrarPedidoItens(Value: Variant);
+begin
+  LimpaDataSet;
+  if Value <> '' then
+    FController
+             .Entidade
+             .PedidosItens
+             .ListarPor(Value)
+             .DataSet(dsPedidoItens)
+  else
+    FController
+             .Entidade
+             .PedidosItens
+             .ListarTodos
+             .DataSet(dsPedidoItens);
+end;
+
+function TfrmViewNovoPedido.FiltrarProduto(Value: Variant): Boolean;
+var
+  lDataSource: TDataSource;
+begin
+  lDataSource := TDataSource.Create(nil);
+  dbgPedidoItensLancando.DataSource := dsPedidoItens;
+  try
+    if Value <> '' then
+      edtValorUnitario.Text := FormatFloat('R$ #,##0.00',
+                                FController
+                                 .Entidade
+                                 .Produtos
+                                 .This
+                                 .NomeCampoParaFiltro('ID')
+                                 .&End
+                                 .ListarPor(Value)
+                                .DataSet(lDataSource)
+                               .DataSet.FieldByName('ValorVenda').AsFloat);
+
+    if not lDataSource.DataSet.IsEmpty then
+    begin
+      Result := True;
+      edtNomeProduto.Text := lDataSource.DataSet.FieldByName('Nome').AsString;
+    end
+    else
+      Result := False;
+  finally
+    lDataSource.Free;
+  end;
+end;
+
+procedure TfrmViewNovoPedido.FormClose(Sender: TObject;
+  var Action: TCloseAction);
+begin
+  Action := CaFree;
+end;
+
+procedure TfrmViewNovoPedido.FormCreate(Sender: TObject);
+begin
+  FController := TController.New;
+  pcPrincipal.TabIndex := 0;
+  FInserir := False;
+  FEditar := False;
+end;
+
+procedure TfrmViewNovoPedido.FormDestroy(Sender: TObject);
+begin
+  frmViewNovoPedido := nil;
+end;
+
+procedure TfrmViewNovoPedido.FormKeyPress(Sender: TObject; var Key: Char);
+begin
+  if Key = #13 then
+  begin
+    Key := #0;
+    Perform(CM_Dialogkey, VK_TAB, 0);
+  end;
+end;
+
+procedure TfrmViewNovoPedido.FormKeyUp(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  case Key of
+    VK_Escape:
+      Close;
+  end;
+end;
+
+procedure TfrmViewNovoPedido.FormShow(Sender: TObject);
+begin
+  ParametroData;
+  rgEscolhaTipoFiltro.ItemIndex := 0;
+end;
+
+procedure TfrmViewNovoPedido.IncluirNovoPedido;
+begin
+  FInserir := True;
+  FEditar := False;
+  LimpaDataSet;
+  LimpaEdits;
+  dtDataEmissao.DateTime := Now;
+  pcPrincipal.TabIndex := 1;
+  edtIdCliente.SetFocus;
+end;
+
+procedure TfrmViewNovoPedido.LimpaDataSet;
+begin
+  cdsPedidoItens.Open;
+  cdsPedidoItens.EmptyDataSet;
+  cdsPedidoItens.Close;
+  cdsPedidoItens.Open;
+end;
+
+procedure TfrmViewNovoPedido.LimpaEdits;
+var
+  I: Integer;
+begin
+  for I := 0 to Pred(Self.ComponentCount) do
+    if (Self.Components[I] is TEdit) then
+      (Self.Components[I] as TEdit).Clear;
+end;
+
+procedure TfrmViewNovoPedido.ParametroData;
+var
+  vDia: String;
+begin
+  vDia := '01/' + FormatDateTime('MM', Now) + '/' + FormatDateTime('YYYY', Now);
+  DataInicial.Date := StrToDate(vDia);
+  DataFinal.Date := Now;
+end;
+
+procedure TfrmViewNovoPedido.IncluirPedidoItens;
+var
+  I: Integer;
+  lDataSource: TDataSource;
+begin
+  lDataSource := TDataSource.Create(nil);
+  try
+    FController.Entidade.Produtos.ListarPor(edtIdProduto.Text)
+      .DataSet(lDataSource);
+
+    if cdsPedidoItens.IsEmpty then
+      LimpaDataSet;
+    cdsPedidoItens.Append;
+    cdsPedidoItens.FieldByName('IdProduto').AsInteger      := lDataSource.DataSet.Fields[0].AsInteger;
+    cdsPedidoItens.FieldByName('Nome').AsString            := lDataSource.DataSet.Fields[1].AsString;
+    cdsPedidoItens.FieldByName('Quantidade').AsInteger     := StrToInt(edtQuantidade.Text);
+    cdsPedidoItens.FieldByName('ValorUnitario').AsCurrency := lDataSource.DataSet.Fields[2].AsCurrency;
+    cdsPedidoItens.FieldByName('ValorProdutos').AsCurrency := frmViewNovoPedido.SomarValorProdutos;
+    cdsPedidoItens.Post;
+
+    edtIdProduto.Clear;
+    edtQuantidade.Clear;
+    edtValorUnitario.Clear;
+    edtIdProduto.SetFocus;
+
+    AtualizaTotalGeral;
+  finally
+    lDataSource.Free;
+  end;
+end;
+
+procedure TfrmViewNovoPedido.IncluirPedidoItensAlterar;
+begin
+  dsPedidoItens.DataSet.First;
+  while not dsPedidoItens.DataSet.Eof do
+  begin
+    cdsPedidoItens.Append;
+    cdsPedidoItens.FieldByName('Id').AsInteger             := dsPedidoItens.DataSet.FieldByName('id').AsInteger;
+    cdsPedidoItens.FieldByName('IdPedido').AsInteger       := dsPedidoItens.DataSet.FieldByName('IdPedido').AsInteger;
+    cdsPedidoItens.FieldByName('IdProduto').AsInteger      := dsPedidoItens.DataSet.FieldByName('IdProduto').AsInteger;
+    cdsPedidoItens.FieldByName('Nome').AsString            := dsPedidoItens.DataSet.FieldByName('Nome').AsString;
+    cdsPedidoItens.FieldByName('Quantidade').AsInteger     := dsPedidoItens.DataSet.FieldByName('Quantidade').AsInteger;
+    cdsPedidoItens.FieldByName('ValorUnitario').AsCurrency := dsPedidoItens.DataSet.FieldByName('ValorUnitario').AsCurrency;
+    cdsPedidoItens.FieldByName('ValorProdutos').AsCurrency := dsPedidoItens.DataSet.FieldByName('ValorProdutos').AsCurrency;
+    cdsPedidoItens.Post;
+
+    dsPedidoItens.DataSet.Next;
+  end;
+end;
+
+procedure TfrmViewNovoPedido.PreencherEditPedido;
+begin
+  edtId.Text          := dsPedido.DataSet.FieldByName('Id').AsString;
+  dtDataEmissao.Date  := dsPedido.DataSet.FieldByName('DataEmissao').AsDateTime;
+  edtIdCliente.Text   := dsPedido.DataSet.FieldByName('IdCliente').AsString;
+  edtNomeCliente.Text := dsPedido.DataSet.FieldByName('Nome').AsString;
+end;
+
+procedure TfrmViewNovoPedido.PreencherEditPedidoItens;
+begin
+  edtIdProduto.Text     := dsPedidoItens.DataSet.FieldByName('IdProduto').AsString;
+  edtNomeProduto.Text   := dsPedidoItens.DataSet.FieldByName('Nome').AsString;
+  edtValorUnitario.Text := FormatFloat('R$ #,##0.00',dsPedidoItens.DataSet.FieldByName('ValorUnitario').AsCurrency);
+  edtQuantidade.Text    := dsPedidoItens.DataSet.FieldByName('Quantidade').AsString;
+  edtValorProdutos.Text := FormatFloat('R$ #,##0.00', dsPedidoItens.DataSet.FieldByName('ValorProdutos').AsCurrency);
+end;
+
+procedure TfrmViewNovoPedido.SalvarPedido;
+var
+  lPedido: TDataSource;
+begin
+  if not cdsPedidoItens.IsEmpty then
+  begin
+    lPedido := TDataSource.Create(nil);
+    try
+      lPedido.DataSet := FController
+                                  .Entidade.Pedidos
+                                  .This
+                                  .IdCliente(StrToInt(edtIdCliente.Text)).DataEmissao(dtDataEmissao.DateTime)
+                                  .ValorPedido(FSomar)
+                                  .&End
+                                  .Inserir
+                                  .DataSet;
+
+      cdsPedidoItens.First;
+      while not cdsPedidoItens.Eof do
+      begin
+        FController
+                 .Entidade
+                 .PedidosItens
+                 .This
+                 .IdPedido(lPedido.DataSet.Fields[0].AsInteger)
+                 .IdProduto(cdsPedidoItensidproduto.AsInteger)
+                 .Quantidade(cdsPedidoItensquantidade.AsInteger)
+                 .ValorUnitario(cdsPedidoItensvalorunitario.AsCurrency)
+                 .ValorProdutos(cdsPedidoItensvalorprodutos.AsCurrency)
+                 .&End
+                 .Inserir;
+        cdsPedidoItens.Next;
+      end;
+
+      MessageDlg('Pedido realizado com sucesso! Numero do pedido ' + lPedido.DataSet.Fields[0].AsString, mtInformation, [mbOK], 0);
+      FInserir := False;
+      FEditar := False;
+    finally
+      btnIncluir.Enabled := True;
+      btnFinalizarPedido.Enabled := False;
+      pcPrincipal.TabIndex := 0;
+      btnTodos.SetFocus;
+      LimpaEdits;
+      LimpaDataSet;
+      lPedido.Free;
+    end;
+  end
+  else
+    raise Exception.Create('Não existe registro a serem salvos!');
+end;
+
+function TfrmViewNovoPedido.SomarValorProdutos: Currency;
+begin
+  Result := 0;
+  Result := cdsPedidoItensvalorunitario.AsCurrency * cdsPedidoItensquantidade.AsInteger;
+end;
+
+procedure TfrmViewNovoPedido.SomenteNumeros(var aKey: Char);
+begin
+  if not(aKey in ['0' .. '9', #8]) then
+    aKey := #0;
+end;
+
+procedure TfrmViewNovoPedido.UpdatePedido;
+begin
+  FController
+           .Entidade
+           .Pedidos
+           .This
+           .ID(dsPedido.DataSet.FieldByName('id').AsInteger)
+           .IdCliente(StrToInt(edtIdCliente.Text))
+           .ValorPedido(FSomar)
+           .&End
+           .Atualizar
+           .DataSet;
+
+  UpdatePedidoItens;
+  btnFinalizarPedido.Enabled := False;
+end;
+
+procedure TfrmViewNovoPedido.UpdatePedidoItens;
+begin
+  cdsPedidoItens.First;
+  while not cdsPedidoItens.Eof do
+  begin
+    FController
+             .Entidade
+             .PedidosItens
+             .This
+             .ID(cdsPedidoItens.FieldByName('id').AsInteger)
+             .IdPedido(cdsPedidoItens.FieldByName('idpedido').AsInteger)
+             .IdProduto(cdsPedidoItens.FieldByName('idproduto').AsInteger)
+             .Quantidade(cdsPedidoItens.FieldByName('Quantidade').AsInteger)
+             .ValorUnitario(cdsPedidoItens.FieldByName('ValorUnitario')
+             .AsCurrency).ValorProdutos(FSomar).&End.Atualizar.DataSet;
+    cdsPedidoItens.Next;
+  end;
+  pcPrincipal.TabIndex := 0;
+  FInserir := False;
+  FEditar := False;
+end;
+
+end.

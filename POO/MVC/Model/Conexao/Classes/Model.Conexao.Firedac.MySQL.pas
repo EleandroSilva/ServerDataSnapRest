@@ -1,0 +1,179 @@
+unit Model.Conexao.Firedac.MySQL;
+
+interface
+
+uses
+  System.SysUtils,
+  System.Classes,
+  System.Types,
+
+  FireDAC.Stan.Intf,
+  FireDAC.Stan.Option,
+  FireDAC.Stan.Error,
+  FireDAC.UI.Intf,
+  FireDAC.Phys.Intf,
+  FireDAC.Stan.Def,
+  FireDAC.Stan.Pool,
+  FireDAC.Stan.Async,
+  FireDAC.Phys,
+  FireDAC.Phys.MySQL,
+  FireDAC.Phys.MySQLDef,
+  FireDAC.VCLUI.Wait,
+  FireDAC.Comp.Client,
+  FireDAC.Stan.Param,
+  FireDAC.DatS,
+  FireDAC.DApt.Intf,
+  FireDAC.DApt,
+  FireDAC.Comp.DataSet,
+
+  Data.DB,
+
+  Model.Conexao.Interfaces;
+
+type
+  TConexaoFiredacMySQL = class(TInterfacedObject, iModelConexao)
+  private
+    FConexao     : TFDConnection;
+    FQuery       : TFDQuery;
+    FDriverMySQL : TFDPhysMySQLDriverLink;
+
+    function VendorLib : String;
+  public
+    constructor Create;
+    destructor Destroy; override;
+    class function New: iModelConexao;
+
+    function Params(Param: String; Value: Variant): iModelConexao; overload;
+    function Params(Param: String) : Variant; overload;
+    function DataSet(DataSource: TDataSource): iModelConexao; overload;
+    function DataSet: TDataSet; overload;
+    function ExecSQL: iModelConexao;
+    function Open: iModelConexao;
+    function SQL(Value: String): iModelConexao;
+    function StartTransaction: iModelConexao;
+    function Commit: iModelConexao;
+    function Rollback: iModelConexao;
+  end;
+
+implementation
+
+
+constructor TConexaoFiredacMySQL.Create;
+begin
+  try
+    FConexao     := TFDConnection.Create(nil);
+    FQuery       := TFDQuery.Create(nil);
+    FDriverMySQL := TFDPhysMySQLDriverLink.Create(nil);
+
+    FDriverMySQL.VendorLib := VendorLib;
+
+    FQuery.Connection        := FConexao;
+    FConexao.Params.DriverID := 'MySQL';
+    FConexao.Params.Database := 'disys';
+    FConexao.Params.UserName := 'root';
+    FConexao.Params.Password := '';
+    FConexao.Params.Add('Port=3306');
+    FConexao.Params.Add('utf8mb4');
+    FConexao.Params.Add('Server=localhost');
+    FConexao.LoginPrompt := False;
+    FConexao.Connected;
+  except
+    on e: Exception do
+    raise Exception.Create('Erro ao tentar se conectar com a base de dados: ' +
+      e.Message);
+  end;
+end;
+
+destructor TConexaoFiredacMySQL.Destroy;
+begin
+  FreeAndNil(FConexao);
+  FreeAndNil(FDriverMySQL);
+  FreeAndNil(FQuery);
+  inherited;
+end;
+
+class function TConexaoFiredacMySQL.New: iModelConexao;
+begin
+  Result := Self.Create;
+end;
+
+function TConexaoFiredacMySQL.Params(Param: String; Value: Variant): iModelConexao;
+begin
+  Result := Self;
+  FQuery.ParamByName(Param).Value := Value;
+end;
+
+function TConexaoFiredacMySQL.Params(Param: String): Variant;
+begin
+  Result := FQuery.ParamByName(Param).Value;
+end;
+
+function TConexaoFiredacMySQL.DataSet(DataSource: TDataSource): iModelConexao;
+begin
+  Result := Self;
+  DataSource.DataSet := FQuery;
+end;
+
+function TConexaoFiredacMySQL.DataSet: TDataSet;
+begin
+  Result := FQuery;
+end;
+
+function TConexaoFiredacMySQL.Commit: iModelConexao;
+begin
+  Result := Self;
+  FConexao.Commit;
+end;
+
+function TConexaoFiredacMySQL.ExecSQL: iModelConexao;
+begin
+  Result := Self;
+  FQuery.ExecSQL;
+end;
+
+
+function TConexaoFiredacMySQL.Open: iModelConexao;
+begin
+  Result := Self;
+  FQuery.Open;
+end;
+
+function TConexaoFiredacMySQL.Rollback: iModelConexao;
+begin
+  Result := Self;
+  FConexao.Rollback;
+end;
+
+function TConexaoFiredacMySQL.SQL(Value: String): iModelConexao;
+begin
+  Result := Self;
+  FQuery.SQL.Clear;
+  FQuery.SQL.Add(Value);
+end;
+
+function TConexaoFiredacMySQL.StartTransaction: iModelConexao;
+begin
+  Result := Self;
+  FConexao.StartTransaction;
+end;
+
+function TConexaoFiredacMySQL.VendorLib: String;
+var
+  lFile: TFileStream;
+  lResource: TResourceStream;
+begin
+  Result := ExtractFilePath(ParamStr(0))+'libmysql.dll';
+  if not FileExists(Result) then
+  begin
+    try
+      lResource := TResourceStream.Create(HInstance, 'libmysql', RT_RCDATA);
+      lFile := TFileStream.Create(Result,fmCreate);
+      lResource.SaveToStream(lFile);
+    finally
+      lFile.Free;
+      lResource.Free;
+    end;
+  end;
+end;
+
+end.

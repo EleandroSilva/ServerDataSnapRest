@@ -1,0 +1,158 @@
+unit Model.DAO.Clientes;
+
+interface
+
+uses
+  System.SysUtils,
+
+  Data.DB,
+
+  Model.DAO.Interfaces,
+  Model.Entidades.interfaces,
+  Model.Conexao.Interfaces,
+  Model.Conexao.Firedac.MySQL,
+  Model.Entidade.Clientes,
+  Model.Entidade.Uteis;
+
+type
+  TDAOClientes = class(TInterfacedObject, iDAOEntidade<iClientes>)
+  private
+    FClientes   : iClientes;
+    FConexao    : iModelConexao;
+    FDataSet    : TDataSet;
+    FTipoFiltro : Integer;
+
+    FUteis      : TUteis;
+    Const
+      FSQL=('select * from cliente');
+  public
+    constructor Create;
+    destructor Destroy; override;
+    class function New: iDAOEntidade<iClientes>;
+
+    function ListarTodos                 : iDAOEntidade<iClientes>;
+    function ListarPor(Value: Variant)   : iDAOEntidade<iClientes>;
+    function Excluir                     : iDAOEntidade<iClientes>;
+    function Atualizar                   : iDAOEntidade<iClientes>;
+    function Inserir                     : iDAOEntidade<iClientes>;
+    function DataSet(DataSource: TDataSource): iDAOEntidade<iClientes>; overload;
+    function DataSet: TDataSet; overload;
+
+    function This : iClientes;
+  end;
+
+implementation
+
+{ TDAOClientes }
+
+constructor TDAOClientes.Create;
+begin
+  FClientes := TClientes.New(Self);
+  FConexao  := TConexaoFiredacMySQL.New;
+  FUteis    := TUteis.Create;
+end;
+
+destructor TDAOClientes.Destroy;
+begin
+  FreeAndNil(FDataSet);
+  FreeAndNil(FUteis);
+  inherited;
+end;
+
+class function TDAOClientes.New: iDAOEntidade<iClientes>;
+begin
+  Result := self.Create;
+end;
+
+function TDAOClientes.DataSet(DataSource: TDataSource): iDAOEntidade<iClientes>;
+begin
+  Result := Self;
+  if not Assigned(FDataSet) then
+    DataSource.DataSet := FConexao.DataSet
+  else
+    DataSource.DataSet := FDataSet;
+end;
+
+function TDAOClientes.DataSet: TDataSet;
+begin
+  Result := FDataSet;
+end;
+
+function TDAOClientes.Atualizar: iDAOEntidade<iClientes>;
+begin
+  Result := self;
+  FConexao.StartTransaction;
+  try
+    FConexao
+      .SQL('UPDATE CLIENTE SET NOME=:NOME WHERE ID=:ID')
+           .Params('NOME', FClientes.Nome)
+           .Params('ID',   FClientes.Id)
+      .ExecSQL
+      .Commit;
+  except
+    FConexao.Rollback;
+    raise Exception.Create('Erro ao tentar atualizar o registro');
+  end;
+end;
+
+function TDAOClientes.Excluir: iDAOEntidade<iClientes>;
+begin
+  Result := Self;
+  FConexao.StartTransaction;
+  try
+    FConexao
+      .SQL('DELETE FROM CLIENTE WHERE ID=:ID')
+           .Params('CODIGO', FClientes.Id)
+      .ExecSQL
+      .Commit;
+  except
+    FConexao.Rollback;
+    raise Exception.Create('Erro ao tentar excluir o registro.');
+  end;
+end;
+
+function TDAOClientes.Inserir: iDAOEntidade<iClientes>;
+begin
+  Result := Self;
+  FConexao.StartTransaction;
+  try
+    FConexao.SQL('INSERT INTO CLIENTE (NOME) VALUES (:NOME)')
+                 .Params('Nome', FClientes.Nome)
+            .ExecSQL
+            .Commit;
+  except
+    FConexao.Rollback;
+    raise Exception.Create('Erro ao tentar gravar o registro.');
+  end;
+end;
+
+function TDAOClientes.ListarTodos: iDAOEntidade<iClientes>;
+begin
+  Result := self;
+  FDataSet := FConexao
+                    .SQL(FSQL)
+                    .Open.DataSet;
+end;
+
+function TDAOClientes.ListarPor(Value: Variant): iDAOEntidade<iClientes>;
+begin
+  Result := self;
+  case FClientes.TipoFiltro of
+    0 : FDataSet := FConexao
+                    .SQL(FSQL+' WHERE ID=:'+FClientes.NomeCampoParaFiltro)
+                    .Params(FClientes.NomeCampoParaFiltro, Value)
+                     .Open
+                    .DataSet;
+    1 : FDataSet := FConexao
+                    .SQL(FSQL+' WHERE ' + FUteis.Pesquisar(FClientes.NomeCampoParaFiltro, ';' + Value))
+                     .Open
+                    .DataSet;
+  end;
+end;
+
+function TDAOClientes.This: iClientes;
+begin
+  Result := FClientes;
+end;
+
+end.

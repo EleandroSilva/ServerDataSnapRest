@@ -1,0 +1,208 @@
+unit ufrmViewPesquisarProdutos;
+
+interface
+
+uses
+  Winapi.Windows,
+  Winapi.Messages,
+  System.SysUtils,
+  System.Variants,
+  System.Classes,
+  Vcl.Graphics,
+  Vcl.Controls,
+  Vcl.Forms,
+  Vcl.Dialogs,
+  Vcl.DBCtrls,
+  Vcl.StdCtrls,
+  Vcl.ExtCtrls,
+  Data.DB,
+  Vcl.Grids,
+  Vcl.DBGrids,
+  Vcl.Buttons,
+  Datasnap.DBClient,
+
+  Controller.Interfaces,
+  Controller;
+
+type
+  TfrmViewPesquisarProdutos = class(TForm)
+    pPesquisar: TPanel;
+    pDigitaConformePesquisa: TPanel;
+    Label1: TLabel;
+    edtPesquisar: TEdit;
+    rgEscolhaTipoFiltro: TRadioGroup;
+    dbgPesquisarProduto: TDBGrid;
+    dsPesquisarProduto: TDataSource;
+    btnFiltrar: TBitBtn;
+    btnVoltar: TBitBtn;
+    cdsPesquisarProduto: TClientDataSet;
+    cdsPesquisarProdutoid: TIntegerField;
+    cdsPesquisarProdutoNome: TStringField;
+    cdsPesquisarProdutovalorvenda: TCurrencyField;
+    Panel1: TPanel;
+    Label2: TLabel;
+    dbNavegador: TDBNavigator;
+    procedure dbgPesquisarProdutoDrawColumnCell(Sender: TObject; const Rect: TRect;
+      DataCol: Integer; Column: TColumn; State: TGridDrawState);
+    procedure FormCreate(Sender: TObject);
+    procedure btnFiltrarClick(Sender: TObject);
+    procedure FormShow(Sender: TObject);
+    procedure btnVoltarClick(Sender: TObject);
+    procedure dbgPesquisarProdutoEnter(Sender: TObject);
+    procedure dbgPesquisarProdutoExit(Sender: TObject);
+    procedure FormKeyDown(Sender: TObject; var Key: Word; Shift: TShiftState);
+    procedure dbgPesquisarProdutoKeyPress(Sender: TObject; var Key: Char);
+    procedure FormDestroy(Sender: TObject);
+    procedure dbgPesquisarProdutoDblClick(Sender: TObject);
+  private
+    FController : iController;
+
+    function PesquisarProdutos(Value: Variant): Boolean;
+    { Private declarations }
+  public
+    { Public declarations }
+  end;
+
+var
+  frmViewPesquisarProdutos: TfrmViewPesquisarProdutos;
+
+implementation
+
+uses
+  ufrmViewNovoPedido;
+
+{$R *.dfm}
+
+procedure TfrmViewPesquisarProdutos.btnFiltrarClick(Sender: TObject);
+begin
+  if not PesquisarProdutos(edtPesquisar.Text) then
+  begin
+    edtPesquisar.Clear;
+    edtPesquisar.SetFocus;
+  end
+  else
+    dbgPesquisarProduto.SetFocus;
+end;
+
+procedure TfrmViewPesquisarProdutos.btnVoltarClick(Sender: TObject);
+begin
+  if not dsPesquisarProduto.DataSet.IsEmpty then
+    frmViewNovoPedido.edtIdProduto.Text := dsPesquisarProduto.DataSet.FieldByName('Id').AsString;
+    frmViewPesquisarProdutos.Close;
+end;
+
+procedure TfrmViewPesquisarProdutos.dbgPesquisarProdutoDblClick(
+  Sender: TObject);
+begin
+  btnVoltar.Click;
+end;
+
+procedure TfrmViewPesquisarProdutos.dbgPesquisarProdutoDrawColumnCell(Sender: TObject; const Rect: TRect;
+  DataCol: Integer; Column: TColumn; State: TGridDrawState);
+begin
+  if Odd(TDBGRID(sender).DATASOURCE.DATASET.RecNo) then
+    TDBGRID(sender).Canvas.Brush.Color := clSkyBlue
+  else
+    TDBGRID(sender).Canvas.Brush.Color := clWhite;
+
+  if (State = [GdSelected]) or (State = [GdFocused]) or (State = [GdSelected, GdFocused]) then
+  begin
+    TDBGRID(SENDER).Canvas.Brush.Color := cl3DLight;
+    TDBGRID(SENDER).Canvas.Font.Color := clBlack;
+  end;
+  TDBGRID(SENDER).DefaultDrawDataCell(Rect, column.field, state);
+end;
+
+procedure TfrmViewPesquisarProdutos.dbgPesquisarProdutoEnter(Sender: TObject);
+begin
+  frmViewPesquisarProdutos.KeyPreview := False;
+end;
+
+procedure TfrmViewPesquisarProdutos.dbgPesquisarProdutoExit(Sender: TObject);
+begin
+  frmViewPesquisarProdutos.KeyPreview := True;
+end;
+
+procedure TfrmViewPesquisarProdutos.dbgPesquisarProdutoKeyPress(Sender: TObject;
+  var Key: Char);
+begin
+  if Key = #13 then
+    btnVoltar.Click;
+end;
+
+procedure TfrmViewPesquisarProdutos.FormCreate(Sender: TObject);
+begin
+  FController := TController.New;
+end;
+
+procedure TfrmViewPesquisarProdutos.FormDestroy(Sender: TObject);
+begin
+  frmViewPesquisarProdutos := Nil;
+end;
+
+procedure TfrmViewPesquisarProdutos.FormKeyDown(Sender: TObject; var Key: Word;
+  Shift: TShiftState);
+begin
+  case Key of
+      VK_F2: edtPesquisar.SetFocus;
+  end;
+
+  case Key of
+      VK_F3: btnFiltrar.Click;
+  end;
+
+  case Key of
+      VK_F4: btnVoltar.Click;
+  end;
+end;
+
+procedure TfrmViewPesquisarProdutos.FormShow(Sender: TObject);
+begin
+  edtPesquisar.Clear;
+  edtPesquisar.SetFocus;
+  PesquisarProdutos(edtPesquisar.Text);
+end;
+
+function TfrmViewPesquisarProdutos.PesquisarProdutos(Value: Variant): Boolean;
+begin
+  if Value <> '' then
+  begin
+    case rgEscolhaTipoFiltro.ItemIndex of
+      0:FController
+           .Entidade
+           .Produtos
+           .This
+           .NomeCampoParaFiltro('Id')
+           .TipoFiltro(rgEscolhaTipoFiltro.ItemIndex)
+           .&End
+           .ListarPor(Value)
+           .DataSet(dsPesquisarProduto);
+      1:FController
+           .Entidade
+           .Produtos
+           .This
+           .NomeCampoParaFiltro('Nome')
+           .TipoFiltro(rgEscolhaTipoFiltro.ItemIndex)
+           .&End
+           .ListarPor(Value)
+           .DataSet(dsPesquisarProduto);
+    end;
+
+  end
+  else
+    FController
+             .Entidade
+             .Produtos
+             .ListarTodos
+             .DataSet(dsPesquisarProduto);
+
+  if dsPesquisarProduto.DataSet.IsEmpty then
+  begin
+    Result := False;
+    ShowMessage('Registro não encontrado!');
+  end
+  else
+    Result := True;
+end;
+
+end.

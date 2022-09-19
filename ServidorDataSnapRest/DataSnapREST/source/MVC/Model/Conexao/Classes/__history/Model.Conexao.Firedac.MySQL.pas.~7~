@@ -92,6 +92,7 @@ end;
 procedure TConexaoFiredacMySQL.LerArquivoIni;
 begin
   try
+    //FController.ConexaoFactory.ConexaoConfiguracaoMySQL.
     FDriverMySQL.VendorLib   := FController.ConexaoFactory.ConexaoConfiguracaoMySQL.VendorLib;
     FQuery.Connection        := FConexao;
     FConexao.Params.DriverID := FController.ConexaoFactory.ConexaoConfiguracaoMySQL.DriverName;
