@@ -13,6 +13,7 @@ type
     function Params(Param: String)                : Variant;  overload;
     function DataSet(DataSource: TDataSource)     : iConexao; overload;
     function DataSet                              : TDataSet; overload;
+    function DataSetJSON                          : TDataSet;
     function ExecSQL                              : iConexao;
     function Open                                 : iConexao;
     function Close                                : iConexao;

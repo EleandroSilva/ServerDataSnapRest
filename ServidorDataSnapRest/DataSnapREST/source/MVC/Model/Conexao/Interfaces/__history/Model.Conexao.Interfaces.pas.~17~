@@ -18,6 +18,8 @@ type
     function Close                                : iConexao;
     function SQL(Value: String)                   : iConexao;
     function AsJsonArray                          : TJsonArray;
+    function DataSetJSONOb(DataSetJSON :TDataSet) : iConexao; overload;
+    function DataSetJSONOb                        : TDataSet;  overload;
     function StartTransaction                     : iConexao;
     function Commit                               : iConexao;
     function Rollback                             : iConexao;

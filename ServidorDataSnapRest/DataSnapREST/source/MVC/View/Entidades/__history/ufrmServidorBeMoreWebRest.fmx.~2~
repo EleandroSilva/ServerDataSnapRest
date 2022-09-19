@@ -59,28 +59,12 @@ object frmServidorBeMoreWebRest: TfrmServidorBeMoreWebRest
   end
   object Button1: TButton
     Position.X = 240.000000000000000000
-    Position.Y = 24.000000000000000000
+    Position.Y = 152.000000000000000000
     Size.Width = 73.000000000000000000
     Size.Height = 22.000000000000000000
     Size.PlatformDefault = False
     TabOrder = 1
     Text = 'Stop'
     OnClick = Button1Click
-  end
-  object Memo1: TMemo
-    Touch.InteractiveGestures = [Pan, LongTap, DoubleTap]
-    DataDetectorTypes = []
-    Position.X = 160.000000000000000000
-    Position.Y = 88.000000000000000000
-    Size.Width = 193.000000000000000000
-    Size.Height = 121.000000000000000000
-    Size.PlatformDefault = False
-    TabOrder = 6
-    Viewport.Width = 189.000000000000000000
-    Viewport.Height = 117.000000000000000000
-  end
-  object DataSource1: TDataSource
-    Left = 184
-    Top = 32
   end
 end

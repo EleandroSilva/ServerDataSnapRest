@@ -8,12 +8,10 @@ uses
   System.Json,
   DataSnap.DSProviderDataModuleAdapter,
   Datasnap.DSServer,
-  Datasnap.DSAuth, Data.DB, Datasnap.DBClient;
+  Datasnap.DSAuth;
 
 type
   TServerMethods1 = class(TDSServerModule)
-    ClientDataSet1: TClientDataSet;
-
   private
     { Private declarations }
   public

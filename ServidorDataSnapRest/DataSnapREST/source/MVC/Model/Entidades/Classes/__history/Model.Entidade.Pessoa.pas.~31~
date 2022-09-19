@@ -98,8 +98,10 @@ begin
       .ConexaoFiredac
       .SQL(FSQL+' WHERE 1=2')
       .Open
-      .DataSet
+      .DataSetJSON(FDataSource)
+      .DataSetJSON
       .FromJSONObject(jObject);
+
 end;
 
 end.

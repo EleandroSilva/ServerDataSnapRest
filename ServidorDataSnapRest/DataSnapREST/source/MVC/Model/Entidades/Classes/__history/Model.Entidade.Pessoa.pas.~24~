@@ -9,13 +9,13 @@ uses
   DataSetConverter4D.Impl,
 
   Model.Entidade.Pessoa.Interfaces,
-  Controller.Conexao.Factory.Interfaces, Data.DB;
+  Controller.Conexao.Factory.Interfaces;
 
 type
   TEntidadePessoa = class(TInterfacedObject, iEntidadePessoa)
     private
       FQuery : iControllerConexaoFactory;
-      FDataSource : TDataSource;
+
       const FSQL ='SELECT * FROM PESSOA';
     public
       constructor Create;
@@ -38,17 +38,16 @@ uses
 constructor TEntidadePessoa.Create;
 begin
   FQuery := TControllerConexaoFactory.New;
-  FDataSource := TDataSource.Create(nil);
 end;
 
 function TEntidadePessoa.Delete(const Key: String): iEntidadePessoa;
 begin
-  Result := Self;
   FQuery
       .ConexaoFactory
       .ConexaoFiredac
-      .SQL('DELETE FROM PESSOA WHERE IDPESSOA='+ Key)
-     .ExecSQL;
+      .SQL('DEELETE FROM IDPESSOA=:IDPESSOA')
+      .SQL('WHERE IDPESSOA='+Key)
+      .ExecSQL;
 end;
 
 destructor TEntidadePessoa.Destroy;
@@ -98,8 +97,9 @@ begin
       .ConexaoFiredac
       .SQL(FSQL+' WHERE 1=2')
       .Open
-      .DataSet
+      .DataSet()
       .FromJSONObject(jObject);
+
 end;
 
 end.

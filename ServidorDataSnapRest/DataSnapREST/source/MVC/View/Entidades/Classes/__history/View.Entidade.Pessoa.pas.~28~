@@ -44,6 +44,7 @@ begin
            .EntidadeFactory
            .Pessoa
            .Delete(Key);
+
 end;
 
 procedure TPessoa.DataModuleCreate(Sender: TObject);

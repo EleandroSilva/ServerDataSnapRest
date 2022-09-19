@@ -5,7 +5,7 @@ interface
 uses
   Data.DB,
   System.SysUtils,
-  System.JSON,
+
 
   FireDAC.UI.Intf,
   FireDAC.FMXUI.Wait,
@@ -32,7 +32,7 @@ uses
   DataSetConverter4D.Impl,
 
   Model.Conexao.Interfaces,
-  Controller.Conexao.Factory.Interfaces,
+  Controller.Conexao.Factory.Interfaces, System.JSON,
   Model.Entidade.Pessoa.Interfaces;
 
 type
@@ -148,6 +148,7 @@ begin
   FQuery.SQL.Add(Value);
 end;
 
+
 function TConexaoFiredac.Open: iConexao;
 begin
   Result := Self;
@@ -163,24 +164,6 @@ end;
 function TConexaoFiredac.AsJsonArray: TJsonArray;
 begin
   Result := FQuery.asJsonArray;
-end;
-
-function TConexaoFiredac.Commit: iConexao;
-begin
-  Result := Self;
-  FConexao.Commit;
-end;
-
-function TConexaoFiredac.Rollback: iConexao;
-begin
-  Result := Self;
-  FConexao.Rollback;
-end;
-
-function TConexaoFiredac.StartTransaction: iConexao;
-begin
-  Result := Self;
-  FConexao.StartTransaction;
 end;
 
 end.

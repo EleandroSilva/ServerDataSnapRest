@@ -17,8 +17,7 @@ uses
   FMX.Edit,
   IdHTTPWebBrokerBridge,
   Web.HTTPApp,
-  FMX.Controls.Presentation, Controller.Conexao.Factory.Interfaces,
-  FMX.ScrollBox, FMX.Memo, Data.DB;
+  FMX.Controls.Presentation, Controller.Conexao.Factory.Interfaces;
 
 type
   TfrmServidorBeMoreWebRest = class(TForm)
@@ -28,8 +27,6 @@ type
     Label1: TLabel;
     ButtonOpenBrowser: TButton;
     Button1: TButton;
-    Memo1: TMemo;
-    DataSource1: TDataSource;
     procedure FormCreate(Sender: TObject);
     procedure ButtonStartClick(Sender: TObject);
     procedure ButtonStopClick(Sender: TObject);
@@ -70,11 +67,8 @@ begin
   FController
             .ConexaoFactory
             .ConexaoFiredac
-            .DataSet(DataSource1)
             .SQL('Select * from pessoa')
             .Open;
-
-  Memo1.Lines.Add(DataSource1.DataSet.FieldByName('nmprimeiro').AsString);
 end;
 
 procedure TfrmServidorBeMoreWebRest.ButtonOpenBrowserClick(Sender: TObject);

@@ -5,7 +5,7 @@ interface
 uses
   Data.DB,
   System.SysUtils,
-  System.JSON,
+
 
   FireDAC.UI.Intf,
   FireDAC.FMXUI.Wait,
@@ -32,8 +32,7 @@ uses
   DataSetConverter4D.Impl,
 
   Model.Conexao.Interfaces,
-  Controller.Conexao.Factory.Interfaces,
-  Model.Entidade.Pessoa.Interfaces;
+  Controller.Conexao.Factory.Interfaces, System.JSON;
 
 type
   TConexaoFiredac = class(TInterfacedObject, iConexao)
@@ -42,6 +41,7 @@ type
       FQuery            : TFDQuery;
       FDriverPostgreSQL : TFDPhysPgDriverLink;
       FController       : iControllerConexaoFactory;
+      FJSON             : TJSONObject;
 
       procedure LerArquivoIni;
     public
@@ -49,18 +49,16 @@ type
       destructor Destroy; override;
       class function New : iConexao;
 
-      function Params(Param: String; Value: Variant) : iConexao; overload;
-      function Params(Param: String)                 : Variant;  overload;
-      function DataSet(DataSource: TDataSource)      : iConexao; overload;
-      function DataSet                               : TDataSet; overload;
+      function Params(Param: String; Value: Variant) : iConexao;    overload;
+      function Params(Param: String)                 : Variant;     overload;
+      function DataSet(DataSource: TDataSource)      : iConexao;    overload;
+      function DataSet                               : TDataSet;    overload;
       function ExecSQL                               : iConexao;
       function Open                                  : iConexao;
       function Close                                 : iConexao;
       function SQL(Value: String)                    : iConexao;
       function AsJsonArray                           : TJsonArray;
-      function StartTransaction                      : iConexao;
-      function Commit                                : iConexao;
-      function Rollback                              : iConexao;
+      function DataSetJSONOb                         : TJSONObject;
   end;
 
 implementation
@@ -75,6 +73,7 @@ begin
   FQuery            := TFDQuery.Create(nil);
   FDriverPostgreSQL := TFDPhysPgDriverLink.Create(nil);
   FController       := TControllerConexaoFactory.New;
+  FJSON             := TJSONObject.Create;
   LerArquivoIni;
 end;
 
@@ -83,6 +82,7 @@ begin
   FreeAndNil(FConexao);
   FreeAndNil(FQuery);
   FreeAndNil(FDriverPostgreSQL);
+  FreeAndNil(FJSON);
   inherited;
 end;
 
@@ -131,7 +131,13 @@ end;
 
 function TConexaoFiredac.DataSet: TDataSet;
 begin
-  Result := FQuery;
+  Result := FQuery
+end;
+
+
+function TConexaoFiredac.DataSetJSONOb : TJSONObject;
+begin
+  Result := FQuery.FromJSONObject(
 end;
 
 function TConexaoFiredac.Close: iConexao;
@@ -148,6 +154,7 @@ begin
   FQuery.SQL.Add(Value);
 end;
 
+
 function TConexaoFiredac.Open: iConexao;
 begin
   Result := Self;
@@ -163,24 +170,6 @@ end;
 function TConexaoFiredac.AsJsonArray: TJsonArray;
 begin
   Result := FQuery.asJsonArray;
-end;
-
-function TConexaoFiredac.Commit: iConexao;
-begin
-  Result := Self;
-  FConexao.Commit;
-end;
-
-function TConexaoFiredac.Rollback: iConexao;
-begin
-  Result := Self;
-  FConexao.Rollback;
-end;
-
-function TConexaoFiredac.StartTransaction: iConexao;
-begin
-  Result := Self;
-  FConexao.StartTransaction;
 end;
 
 end.

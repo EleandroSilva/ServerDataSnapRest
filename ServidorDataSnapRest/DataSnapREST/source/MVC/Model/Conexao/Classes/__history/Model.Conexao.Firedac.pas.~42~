@@ -5,7 +5,7 @@ interface
 uses
   Data.DB,
   System.SysUtils,
-  System.JSON,
+
 
   FireDAC.UI.Intf,
   FireDAC.FMXUI.Wait,
@@ -32,7 +32,7 @@ uses
   DataSetConverter4D.Impl,
 
   Model.Conexao.Interfaces,
-  Controller.Conexao.Factory.Interfaces,
+  Controller.Conexao.Factory.Interfaces, System.JSON,
   Model.Entidade.Pessoa.Interfaces;
 
 type
@@ -53,6 +53,7 @@ type
       function Params(Param: String)                 : Variant;  overload;
       function DataSet(DataSource: TDataSource)      : iConexao; overload;
       function DataSet                               : TDataSet; overload;
+      function DataSetJSON                           : TDataSet;
       function ExecSQL                               : iConexao;
       function Open                                  : iConexao;
       function Close                                 : iConexao;
@@ -81,7 +82,7 @@ end;
 destructor TConexaoFiredac.Destroy;
 begin
   FreeAndNil(FConexao);
-  FreeAndNil(FQuery);
+  //FreeAndNil(FQuery);
   FreeAndNil(FDriverPostgreSQL);
   inherited;
 end;
@@ -130,6 +131,11 @@ begin
 end;
 
 function TConexaoFiredac.DataSet: TDataSet;
+begin
+  Result := FQuery;
+end;
+
+function TConexaoFiredac.DataSetJSON: TDataSet;
 begin
   Result := FQuery;
 end;
